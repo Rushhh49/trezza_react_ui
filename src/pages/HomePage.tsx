@@ -61,6 +61,20 @@ const HomePage: React.FC = () => {
             </button>
           </form>
         </Card>
+        <iframe 
+        title="example"
+        frameborder="0" 
+        allowfullscreen 
+        mozallowfullscreen="true" 
+        webkitallowfullscreen="true" 
+        xr-spatial-tracking 
+        execution-while-out-of-viewport 
+        execution-while-not-rendered web-share
+        allow="autoplay; fullscreen; xr-spatial-tracking; web-share" 
+        width="1280px" height="720px"
+        //src="https://drive.ijewel3d.com/drive/files/{MODEL_ID}/embedded" //////////////////////////// Add Model ID here
+        src="https://drive.ijewel3d.com/drive/files//O4hlCw8CQiG866Y-jDZvdw/embedded"
+      />
       </div>
 
       {/* Footer */}
