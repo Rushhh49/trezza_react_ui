@@ -357,7 +357,7 @@ const ItemDetailPage: React.FC = () => {
                     "border-gray-300 text-gray-700 hover:bg-gray-100"
                   }
                 >
-                  Version {version.version_number}: {version.version_name}
+                  Version {version.version_number}
                 </Button>
               ))}
             </div>
@@ -458,10 +458,10 @@ const ItemDetailPage: React.FC = () => {
                 Version Details
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                {/* <div>
                   <div className="text-lg text-gray-500 font-semibold">Version Name</div>
                   <div className="text-sm text-gray-900 font-medium">{currentVersion.version_name}</div>
-                </div>
+                </div> */}
                 <div>
                   <div className="text-lg text-gray-500 font-semibold">Version Number</div>
                   <div className="text-sm text-gray-900 font-medium">{currentVersion.version_number}</div>
