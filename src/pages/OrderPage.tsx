@@ -29,6 +29,7 @@ import {
   CarouselNext,
 } from '@/components/ui/carousel';
 import { X } from 'lucide-react';
+import { API_CONFIG, getAuthHeaders } from '@/config/api';
 
 interface OrderData {
   customerName?: string;
@@ -123,9 +124,7 @@ interface VersionData {
   [key: string]: any;
 }
 
-const API_BASE = "http://89.116.34.13:13000";
-const AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGVOYW1lIjoiYWRtaW4iLCJpYXQiOjE3NTE5Nzc3MjEsImV4cCI6MTc1NDU2OTcyMX0.EH7hoMnhdaFjMJ768Uh7pVrjiQRVSvu2cLeh7GIirDs";
-const CORS_PROXY = "https://corsproxy.io/?";
+const API_BASE = API_CONFIG.BASE_URL;
 
 // Dynamically load model-viewer script if not present
 function useModelViewerScript() {
@@ -169,7 +168,7 @@ const OrderPage: React.FC = () => {
     if (!orderId) return;
     setLoading(true);
     setError("");
-    const headers = { Authorization: `Bearer ${AUTH_TOKEN}` };
+    const headers = getAuthHeaders();
     
     // First fetch the order to get the PO number
     fetch(`${API_BASE}/api/orders/${orderId}`, { headers })
@@ -195,7 +194,7 @@ const OrderPage: React.FC = () => {
         return orderData;
       })
       .then((orderData) => {
-        // Fetch items using :list endpoint
+        // Fetch items using new items:list with JSON filter
         if (orderData.po_no) {
           console.log('Fetching items for PO:', orderData.po_no);
           return fetchItemsForOrder(orderData.po_no, headers);
@@ -233,23 +232,23 @@ const OrderPage: React.FC = () => {
     try {
       console.log('Fetching items for order with PO:', poNo);
       
-      // Use the exact filter structure from your example
+      // Use the exact filter structure
       const filter = encodeURIComponent(JSON.stringify({
         $and: [
           {
             order_id: {
               po_no: {
-                $in: [poNo]
+                $eq: poNo
               }
             }
           }
         ]
       }));
       
-      const appends = ['order_id'];
+      const appends = ['order_id.associate', 'order_id.retailer', 'order_id'];
       const appendsParam = appends.map(append => `appends[]=${append}`).join('&');
       
-      const url = `${API_BASE}/api/items:list?pageSize=100&page=1&${appendsParam}&filter=${filter}`;
+      const url = `${API_BASE}/api/items:list?pageSize=100&page=1&sort[]=-createdAt&sort[]=po_i_no&${appendsParam}&filter=${filter}`;
       console.log('Fetching items with exact filter structure:', url);
       
       const response = await fetch(url, { headers });
@@ -275,24 +274,15 @@ const OrderPage: React.FC = () => {
     try {
       console.log('Fetching versions for items with PO Item Numbers:', poINos);
       
-      // Use the exact filter structure from your example
+      // Use the new order-level versions API: v_i_fk.order_id.po_no
       const filter = encodeURIComponent(JSON.stringify({
         $and: [
-          {
-            f_s201x17a2bx: {
-              po_i_no: {
-                $in: poINos
-              }
-            }
-          }
+          { v_i_fk: { order_id: { po_no: { $in: poINos.length > 0 ? [items[0]?.fkb_orders_to_items] : [] } } } }
         ]
       }));
-      
-      const appends = ['references', 'f_s201x17a2bx'];
-      const appendsParam = appends.map(append => `appends[]=${append}`).join('&');
-      
-      const url = `${API_BASE}/api/versions:list?pageSize=100&page=1&${appendsParam}&filter=${filter}`;
-      console.log('Fetching versions with exact filter structure:', url);
+
+      const url = `${API_BASE}/api/versions:list?pageSize=200&page=1&sort[]=-updatedAt&sort[]=-fkb_items_and_versions&appends[]=v_i_fk.order_id&appends[]=v_i_fk.order_id.retailer&appends[]=v_i_fk&filter=${filter}`;
+      console.log('Fetching versions using order-level relation:', url);
       
       const response = await fetch(url, { headers });
       if (response.ok) {
@@ -318,7 +308,7 @@ const OrderPage: React.FC = () => {
     
     setUpdatingRetailer(true);
     try {
-      const headers = { Authorization: `Bearer ${AUTH_TOKEN}` };
+      const headers = getAuthHeaders();
       
       // Update retailer information using the API endpoint you mentioned: /api/orders/{orderId}/retailer:get
       // Since the endpoint is :get, we'll try using query parameters to update
@@ -823,7 +813,7 @@ const OrderPage: React.FC = () => {
             <div className="mt-4 space-y-2">
               <button 
                 onClick={async () => {
-                  const headers = { Authorization: `Bearer ${AUTH_TOKEN}` };
+                  const headers = getAuthHeaders();
                   console.log('Testing items API...');
                   try {
                     const response = await fetch(`${API_BASE}/api/items:list?pageSize=10`, { headers });
@@ -840,7 +830,7 @@ const OrderPage: React.FC = () => {
               
               <button 
                 onClick={async () => {
-                  const headers = { Authorization: `Bearer ${AUTH_TOKEN}` };
+                  const headers = getAuthHeaders();
                   console.log('Testing versions API...');
                   try {
                     const response = await fetch(`${API_BASE}/api/versions:list?pageSize=10`, { headers });
@@ -857,7 +847,7 @@ const OrderPage: React.FC = () => {
               
               <button 
                 onClick={async () => {
-                  const headers = { Authorization: `Bearer ${AUTH_TOKEN}` };
+                  const headers = getAuthHeaders();
                   console.log('Testing specific order...');
                   try {
                     const response = await fetch(`${API_BASE}/api/orders/${orderId}`, { headers });
@@ -874,7 +864,7 @@ const OrderPage: React.FC = () => {
               
               <button 
                 onClick={async () => {
-                  const headers = { Authorization: `Bearer ${AUTH_TOKEN}` };
+                  const headers = getAuthHeaders();
                   console.log('Testing retailer API...');
                   try {
                     const response = await fetch(`${API_BASE}/api/orders/${orderId}/retailer:get`, { headers });

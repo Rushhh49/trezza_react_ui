@@ -158,9 +158,14 @@ const ItemDetailPage: React.FC = () => {
         // Only fetch versions from API if none were passed from navigation state
         if (!navigationState?.versions || navigationState.versions.length === 0) {
           console.log('No versions from navigation state, fetching from API...');
-          const versionsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions:list`, {
-            headers: getAuthHeaders()
-          });
+          // Fetch versions only for this item using JSON filter and appends
+          const versionsFilter = encodeURIComponent(JSON.stringify({
+            $and: [
+              { f_s201x17a2bx: { po_i_no: { $eq: (navigationState?.itemData?.po_i_no || itemId) } } }
+            ]
+          }));
+          const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=100&page=1&appends[]=references&appends[]=f_s201x17a2bx&filter=${versionsFilter}`;
+          const versionsResponse = await fetch(versionsUrl, { headers: getAuthHeaders() });
           
           if (!versionsResponse.ok) {
             const errorText = await versionsResponse.text();
@@ -170,12 +175,7 @@ const ItemDetailPage: React.FC = () => {
           }
           
           const versionsData = await versionsResponse.json();
-          const allVersions = Array.isArray(versionsData.data) ? versionsData.data : [versionsData.data];
-          
-          // Filter versions that belong to this item
-          const itemVersions = allVersions.filter((version: any) => 
-            version.fkb_items_and_versions === (navigationState?.itemData?.po_i_no || item?.po_i_no)
-          );
+          const itemVersions = Array.isArray(versionsData.data) ? versionsData.data : [];
           
           // Sort by version number (highest first)
           itemVersions.sort((a: any, b: any) => b.version_number - a.version_number);

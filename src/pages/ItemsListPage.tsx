@@ -64,8 +64,13 @@ const ItemsListPage: React.FC = () => {
       try {
         console.log('Fetching data for purchase number:', purchaseNumber);
         
-        // Step 1: First get the order ID by filtering, then fetch the full order with nested data
-        const ordersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders:list?filter[po_no]=${encodeURIComponent(String(purchaseNumber))}&pageSize=1`, {
+        // Step 1: Get the order with associate and retailer using new list API and JSON filter
+        const orderFilter = encodeURIComponent(JSON.stringify({
+          $and: [
+            { po_no: { $eq: String(purchaseNumber) } }
+          ]
+        }));
+        const ordersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders:list?pageSize=1&page=1&appends[]=associate&appends[]=retailer&filter=${orderFilter}`, {
           headers: getAuthHeaders()
         });
         
@@ -86,46 +91,19 @@ const ItemsListPage: React.FC = () => {
           throw new Error(`No order found with purchase number: ${purchaseNumber}`);
         }
         
-        // Now fetch the full order with nested retailer data
-        const fullOrderResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders:get?id=${orderSummary.id}`, {
-          headers: getAuthHeaders()
-        });
+        // We already have associate and retailer appended
+        setOrder(orderSummary);
+        setRetailer(orderSummary.retailer || null);
         
-        if (!fullOrderResponse.ok) {
-          throw new Error(`Failed to fetch full order details: ${fullOrderResponse.status}`);
-        }
-        
-        const fullOrderData = await fullOrderResponse.json();
-        console.log('Full order data received:', fullOrderData);
-        
-        const singleOrder = fullOrderData.data;
-        console.log('Single order with nested data:', singleOrder);
-        
-        setOrder(singleOrder);
-        
-        // Step 2: Fetch retailer information using the separate endpoint
-        if (singleOrder.id) {
-          try {
-            console.log('Fetching retailer info for order ID:', singleOrder.id);
-            const retailerResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders/${singleOrder.id}/retailer:get`, {
-              headers: getAuthHeaders()
-            });
-            
-            if (retailerResponse.ok) {
-              const retailerData = await retailerResponse.json();
-              console.log('Retailer data:', retailerData);
-              setRetailer(retailerData.data);
-            } else {
-              console.warn('Failed to fetch retailer info:', retailerResponse.status);
-            }
-          } catch (err) {
-            console.warn('Failed to fetch retailer info:', err);
-          }
-        }
-        
-        // Step 3: Get all items using the list API method
+        // Step 2: Get all items for this order using the new list API with JSON filter and appends
         console.log('Fetching items...');
-        const itemsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/items:list`, {
+        const itemsFilter = encodeURIComponent(JSON.stringify({
+          $and: [
+            { order_id: { po_no: { $eq: String(purchaseNumber) } } }
+          ]
+        }));
+        const itemsUrl = `${API_CONFIG.BASE_URL}/api/items:list?pageSize=100&page=1&sort[]=-createdAt&sort[]=po_i_no&appends[]=order_id.associate&appends[]=order_id.retailer&appends[]=order_id&filter=${itemsFilter}`;
+        const itemsResponse = await fetch(itemsUrl, {
           headers: getAuthHeaders()
         });
         
@@ -139,52 +117,28 @@ const ItemsListPage: React.FC = () => {
         const itemsData = await itemsResponse.json();
         console.log('Items data received:', itemsData);
         
-        const allItems = Array.isArray(itemsData.data) ? itemsData.data : [itemsData.data];
-        console.log('All items:', allItems);
+        const orderItems = Array.isArray(itemsData.data) ? itemsData.data : [];
+        console.log('Items for this order (server-filtered):', orderItems);
         
-        // Filter items that belong to this order - try multiple possible field names
-        const orderItems = allItems.filter((item: any) => 
-          item.fkb_orders_to_items === purchaseNumber || 
-          item.order_id === purchaseNumber ||
-          item.po_number === purchaseNumber ||
-          item.purchase_order === purchaseNumber ||
-          item.po_no === purchaseNumber ||
-          item.purchase_order_no === purchaseNumber ||
-          item.po_i_no === purchaseNumber
-        );
-        console.log('Filtered items for this order:', orderItems);
-        
-        // Step 4: Fetch all versions once and then filter per item for efficiency
+        // Step 3: Fetch versions for this order using the new API relation via v_i_fk.order_id.po_no
         console.log('Fetching all versions...');
-        const versionsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions:list`, {
-          headers: getAuthHeaders()
-        });
-        
         let allVersions: any[] = [];
+        const versionsFilter = encodeURIComponent(JSON.stringify({
+          $and: [
+            { v_i_fk: { order_id: { po_no: { $eq: String(purchaseNumber) } } } }
+          ]
+        }));
+        const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=200&page=1&sort[]=-updatedAt&sort[]=-fkb_items_and_versions&appends[]=v_i_fk.order_id&appends[]=v_i_fk.order_id.retailer&appends[]=v_i_fk&filter=${versionsFilter}`;
+        const versionsResponse = await fetch(versionsUrl, { headers: getAuthHeaders() });
         if (versionsResponse.ok) {
           const versionsData = await versionsResponse.json();
           console.log('Versions data received:', versionsData);
-          allVersions = Array.isArray(versionsData.data) ? versionsData.data : [versionsData.data];
+          allVersions = Array.isArray(versionsData.data) ? versionsData.data : [];
         }
         
-        // Step 5: Assign versions to each item based on the item's unique identifier
+        // Step 4: Assign versions to each item based on po_i_no linkage
         const itemsWithVersions = orderItems.map((item: any) => {
-          // Filter versions that belong to this specific item
-          const itemVersions = allVersions.filter((version: any) => {
-            // Try multiple possible field names for the relationship
-            const matches = version.fkb_items_and_versions === item.po_i_no ||
-                   version.fkb_items_and_versions === item.id ||
-                   version.item_id === item.id ||
-                   version.fkb_items_to_versions === item.id ||
-                   version.po_number === item.po_i_no ||
-                   version.purchase_order === item.po_i_no;
-            
-            if (matches) {
-              console.log(`Version ${version.id} matches item ${item.id} (${item.po_i_no})`);
-            }
-            
-            return matches;
-          });
+          const itemVersions = allVersions.filter((version: any) => version?.v_i_fk?.po_i_no === item.po_i_no);
           
           console.log(`Found ${itemVersions.length} versions for item ${item.id} (${item.po_i_no}):`, itemVersions);
           console.log(`Item ${item.id} versions breakdown:`, {
