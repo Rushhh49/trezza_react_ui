@@ -257,11 +257,7 @@ const ItemsListPage: React.FC = () => {
             <h2 className="text-2xl font-semibold text-gray-900 font-['Playfair_Display']">
               Items ({items.length})
             </h2>
-            {items.length > 0 && (
-              <div className="text-sm text-gray-500">
-                Total versions across all items: {items.reduce((sum, item) => sum + (item.versions?.length || 0), 0)}
-              </div>
-            )}
+            {/* Removed total versions across items for cleaner minimal look */}
           </div>
           
           {items.length === 0 ? (
@@ -346,11 +342,9 @@ const ItemsListPage: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-[#5440a8] py-4 mt-auto">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center text-white text-sm">
-            © 2024 BYONDJEWELRY. All rights reserved.
-          </div>
+      <footer className="border-t border-gray-200 py-4 mt-auto bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center text-gray-500 text-sm">© 2024 BYONDJEWELRY. All rights reserved.</div>
         </div>
       </footer>
     </div>
