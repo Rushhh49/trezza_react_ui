@@ -288,9 +288,6 @@ const ItemsListPage: React.FC = () => {
                         <h3 className="text-xl font-semibold text-[#4A3C72] mb-2">
                           {item.item_name}
                         </h3>
-                        <p className="text-sm text-[#837A75] mb-3">
-                          {item.item_description || 'No description available'}
-                        </p>
                       </div>
                       <div className="text-right">
                         <Badge variant="secondary" className="bg-[#E6C2FF] text-[#4A3C72] mb-2">
