@@ -454,9 +454,9 @@ const ItemDetailPage: React.FC = () => {
           <div className="flex-1 w-full max-w-2xl mx-auto lg:mx-0">
             {/* Version Information */}
             <Card className="p-6 bg-white border border-gray-200 shadow-sm mb-6">
-              <h3 className="text-xl font-semibold mb-4 text-[#4A3C72] font-['Playfair_Display']">
+              <h4 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">
                 Version Details
-              </h3>
+              </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <div className="text-sm text-gray-500 font-semibold">Version Name</div>
@@ -483,9 +483,9 @@ const ItemDetailPage: React.FC = () => {
 
             {/* Technical Specifications */}
             <Card className="p-6 bg-white border border-gray-200 shadow-sm mb-6">
-              <h3 className="text-xl font-semibold mb-4 text-[#4A3C72] font-['Playfair_Display']">
+              <h4 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">
                 Technical Specifications
-              </h3>
+              </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {currentVersion.metal_type && (
                   <div>
@@ -528,9 +528,9 @@ const ItemDetailPage: React.FC = () => {
 
             {/* Item Information */}
             <Card className="p-6 bg-white border border-gray-200 shadow-sm">
-              <h3 className="text-xl font-semibold mb-4 text-[#4A3C72] font-['Playfair_Display']">
+              <h4 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">
                 Item Information
-              </h3>
+              </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <div className="text-sm text-gray-500 font-semibold">Item ID</div>
