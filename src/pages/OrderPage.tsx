@@ -896,11 +896,9 @@ const OrderPage: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-[#5440a8] py-4 mt-auto">
+      <footer className="border-t border-gray-200 py-4 mt-auto bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center text-white text-sm">
-            © 2024 BYONDJEWELRY. All rights reserved.
-          </div>
+          <div className="text-center text-gray-500 text-sm">© 2024 BYONDJEWELRY. All rights reserved.</div>
         </div>
       </footer>
       {/* Media Preview Modal (keep as before) */}
