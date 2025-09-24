@@ -282,19 +282,19 @@ const ItemDetailPage: React.FC = () => {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[#fefbf8] flex items-center justify-center">
-      <div className="text-xl text-[#4A3C72]">Loading...</div>
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="text-xl text-gray-700">Loading...</div>
     </div>
   );
   
   if (error) return (
-    <div className="min-h-screen bg-[#fefbf8] flex items-center justify-center">
+    <div className="min-h-screen bg-white flex items-center justify-center">
       <div className="text-xl text-red-600">Error: {error}</div>
     </div>
   );
 
   if (!item || !currentVersion) return (
-    <div className="min-h-screen bg-[#fefbf8] flex items-center justify-center">
+    <div className="min-h-screen bg-white flex items-center justify-center">
       <div className="text-xl text-red-600">No item or version data found</div>
     </div>
   );
@@ -309,52 +309,43 @@ const ItemDetailPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fefbf8] font-['Inter'] flex flex-col">
+    <div className="min-h-screen bg-white font-['Inter'] flex flex-col">
       {/* Header */}
-      <header>
-        <div className="bg-[#5440a8] h-2"></div>
-        <div className="bg-[#483395]">
-          <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">BYONDJEWELRY</h1>
-            </div>
-            <nav className="flex items-center space-x-6">
-              {/* Navigation removed as requested */}
-            </nav>
+      <header className="border-b border-gray-200 bg-white/70 backdrop-blur">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 font-['Playfair_Display']">BYONDJEWELRY</h1>
           </div>
+          <nav className="flex items-center space-x-6"></nav>
         </div>
       </header>
 
-      <div className="flex-1 max-w-7xl mx-auto px-6 py-8">
+      <div className="flex-1 max-w-7xl mx-auto px-6 py-10">
         {/* Back Button and Header */}
         <div className="mb-6">
           <Button 
             variant="ghost" 
             onClick={goBack}
-            className="mb-4 text-[#4A3C72] hover:bg-[#E6C2FF]"
+            className="mb-4 text-gray-700 hover:bg-gray-100"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Items
           </Button>
           
           <div className="flex items-center gap-4 mb-4">
-            <h1 className="text-3xl font-bold text-[#4A3C72] font-['Playfair_Display'] tracking-tight">
+            <h1 className="text-3xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">
               {item.item_name}
             </h1>
-            <Badge variant="secondary" className="bg-[#E6C2FF] text-[#4A3C72]">
+            <Badge variant="secondary" className="bg-gray-100 text-gray-800 border border-gray-200">
               Version {currentVersion.version_number}
             </Badge>
           </div>
-          
-          <p className="text-lg text-[#4A3C72] mb-6">
-            {item.item_description || 'No description available'}
-          </p>
         </div>
 
         {/* Version Selector */}
         {versions.length > 1 && (
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-[#4A3C72] mb-4">Select Version</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Version</h3>
             <div className="flex gap-2 flex-wrap">
               {versions.map((version) => (
                 <Button
@@ -362,8 +353,8 @@ const ItemDetailPage: React.FC = () => {
                   variant={currentVersion.id === version.id ? "default" : "outline"}
                   onClick={() => handleVersionChange(version)}
                   className={currentVersion.id === version.id ? 
-                    "bg-[#4A3C72] text-white" : 
-                    "border-[#4A3C72] text-[#4A3C72] hover:bg-[#E6C2FF]"
+                    "bg-gray-900 text-white" : 
+                    "border-gray-300 text-gray-700 hover:bg-gray-100"
                   }
                 >
                   Version {version.version_number}: {version.version_name}
@@ -468,23 +459,23 @@ const ItemDetailPage: React.FC = () => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-[#837A75] font-semibold">Version Name</div>
-                  <div className="text-lg text-[#4A3C72] font-medium">{currentVersion.version_name}</div>
+                  <div className="text-sm text-gray-500 font-semibold">Version Name</div>
+                  <div className="text-lg text-gray-900 font-medium">{currentVersion.version_name}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-[#837A75] font-semibold">Version Number</div>
-                  <div className="text-lg text-[#4A3C72] font-medium">{currentVersion.version_number}</div>
+                  <div className="text-sm text-gray-500 font-semibold">Version Number</div>
+                  <div className="text-lg text-gray-900 font-medium">{currentVersion.version_number}</div>
                 </div>
                 {currentVersion.item_size && (
                   <div>
-                    <div className="text-sm text-[#837A75] font-semibold">Size</div>
-                    <div className="text-lg text-[#4A3C72] font-medium">{currentVersion.item_size}</div>
+                    <div className="text-sm text-gray-500 font-semibold">Size</div>
+                    <div className="text-lg text-gray-900 font-medium">{currentVersion.item_size}</div>
                   </div>
                 )}
                 {currentVersion.version_quantity && (
                   <div>
-                    <div className="text-sm text-[#837A75] font-semibold">Quantity</div>
-                    <div className="text-lg text-[#4A3C72] font-medium">{currentVersion.version_quantity}</div>
+                    <div className="text-sm text-gray-500 font-semibold">Quantity</div>
+                    <div className="text-lg text-gray-900 font-medium">{currentVersion.version_quantity}</div>
                   </div>
                 )}
               </div>
@@ -498,38 +489,38 @@ const ItemDetailPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {currentVersion.metal_type && (
                   <div>
-                    <div className="text-sm text-[#837A75] font-semibold">Metal Type</div>
-                    <div className="text-lg text-[#4A3C72] font-medium">{currentVersion.metal_type}</div>
+                    <div className="text-sm text-gray-500 font-semibold">Metal Type</div>
+                    <div className="text-lg text-gray-900 font-medium">{currentVersion.metal_type}</div>
                   </div>
                 )}
                 {currentVersion.metal_color && (
                   <div>
-                    <div className="text-sm text-[#837A75] font-semibold">Metal Color</div>
-                    <div className="text-lg text-[#4A3C72] font-medium">{currentVersion.metal_color}</div>
+                    <div className="text-sm text-gray-500 font-semibold">Metal Color</div>
+                    <div className="text-lg text-gray-900 font-medium">{currentVersion.metal_color}</div>
                   </div>
                 )}
                 {currentVersion.center_stone_info && (
                   <div>
-                    <div className="text-sm text-[#837A75] font-semibold">Center Stone</div>
-                    <div className="text-lg text-[#4A3C72] font-medium">{currentVersion.center_stone_info}</div>
+                    <div className="text-sm text-gray-500 font-semibold">Center Stone</div>
+                    <div className="text-lg text-gray-900 font-medium">{currentVersion.center_stone_info}</div>
                   </div>
                 )}
                 {currentVersion.melee_stones_info && (
                   <div>
-                    <div className="text-sm text-[#837A75] font-semibold">Melee Stones</div>
-                    <div className="text-lg text-[#4A3C72] font-medium">{currentVersion.melee_stones_info}</div>
+                    <div className="text-sm text-gray-500 font-semibold">Melee Stones</div>
+                    <div className="text-lg text-gray-900 font-medium">{currentVersion.melee_stones_info}</div>
                   </div>
                 )}
                 {currentVersion.stamp_engraving && (
                   <div>
-                    <div className="text-sm text-[#837A75] font-semibold">Stamp/Engraving</div>
-                    <div className="text-lg text-[#4A3C72] font-medium">{currentVersion.stamp_engraving}</div>
+                    <div className="text-sm text-gray-500 font-semibold">Stamp/Engraving</div>
+                    <div className="text-lg text-gray-900 font-medium">{currentVersion.stamp_engraving}</div>
                   </div>
                 )}
                 {currentVersion.item_description && (
                   <div className="md:col-span-2">
-                    <div className="text-sm text-[#837A75] font-semibold">Version Description</div>
-                    <div className="text-lg text-[#4A3C72] font-medium">{currentVersion.item_description}</div>
+                    <div className="text-sm text-gray-500 font-semibold">Version Description</div>
+                    <div className="text-lg text-gray-900 font-medium">{currentVersion.item_description}</div>
                   </div>
                 )}
               </div>
@@ -542,16 +533,16 @@ const ItemDetailPage: React.FC = () => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-[#837A75] font-semibold">Item ID</div>
-                  <div className="text-lg text-[#4A3C72] font-medium">{item.po_i_no}</div>
+                  <div className="text-sm text-gray-500 font-semibold">Item ID</div>
+                  <div className="text-lg text-gray-900 font-medium">{item.po_i_no}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-[#837A75] font-semibold">Quantity</div>
-                  <div className="text-lg text-[#4A3C72] font-medium">{item.Quantity || 'N/A'}</div>
+                  <div className="text-sm text-gray-500 font-semibold">Quantity</div>
+                  <div className="text-lg text-gray-900 font-medium">{item.Quantity || 'N/A'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-[#837A75] font-semibold">Purchase Order</div>
-                  <div className="text-lg text-[#4A3C72] font-medium">{item.fkb_orders_to_items}</div>
+                  <div className="text-sm text-gray-500 font-semibold">Purchase Order</div>
+                  <div className="text-lg text-gray-900 font-medium">{item.fkb_orders_to_items}</div>
                 </div>
               </div>
             </Card>
@@ -560,11 +551,9 @@ const ItemDetailPage: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-[#5440a8] py-4 mt-auto">
+      <footer className="border-t border-gray-200 py-4 mt-auto bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center text-white text-sm">
-            © 2024 BYONDJEWELRY. All rights reserved.
-          </div>
+          <div className="text-center text-gray-500 text-sm">© 2024 BYONDJEWELRY. All rights reserved.</div>
         </div>
       </footer>
 
@@ -579,7 +568,7 @@ const ItemDetailPage: React.FC = () => {
             onClick={e => e.stopPropagation()}
           >
             <button
-              className="absolute top-4 right-4 text-2xl text-[#837A75] hover:text-[#4A3C72]"
+              className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-800"
               onClick={() => setModalOpen(false)}
               title="Close"
             >

@@ -372,61 +372,54 @@ const OrderPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#fefbf8] font-['Inter'] flex flex-col">
       {/* Header */}
-      <header>
-        {/* Top banner */}
-        <div className="bg-[#5440a8] h-2"></div>
-        {/* Main header */}
-        <div className="bg-[#483395]">
-          <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">BYONDJEWELRY</h1>
-            </div>
-            <nav className="flex items-center space-x-6">
-              {/* Navigation removed as requested */}
-            </nav>
+      <header className="border-b border-gray-200 bg-white/70 backdrop-blur">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 font-['Playfair_Display']">BYONDJEWELRY</h1>
           </div>
+          <nav className="flex items-center space-x-6"></nav>
         </div>
       </header>
 
-      <div className="flex-1 max-w-7xl mx-auto px-6 py-8">
+      <div className="flex-1 max-w-7xl mx-auto px-6 py-10">
         {/* Order ID and Status */}
         <div className="mb-6 flex items-center gap-4">
-          <h2 className="text-2xl font-bold text-[#4A3C72] font-['Playfair_Display'] tracking-tight">Order ID {orderId}</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">Order ID {orderId}</h2>
           {order.status && (
-            <div className="bg-[#fdfaf7] border border-gray-200 rounded-lg px-4 py-2">
-              <span className="text-sm font-semibold text-[#4A3C72]">{order.status}</span>
+            <div className="bg-gray-100 border border-gray-200 rounded px-3 py-1.5">
+              <span className="text-sm font-medium text-gray-800">{order.status}</span>
             </div>
           )}
           {order.po_no && (
-            <div className="bg-[#E6C2FF] border border-[#4A3C72] rounded-lg px-4 py-2">
-              <span className="text-sm font-semibold text-[#4A3C72]">PO: {order.po_no}</span>
+            <div className="bg-gray-50 border border-gray-200 rounded px-3 py-1.5">
+              <span className="text-sm font-medium text-gray-800">PO: {order.po_no}</span>
             </div>
           )}
         </div>
         
         {/* Retailer Info */}
         <div className="mb-6">
-          <div className="bg-[#f0f8ff] border border-[#4A3C72] rounded-lg px-4 py-3">
+          <div className="bg-white border border-gray-200 rounded px-4 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-[#4A3C72]">Retailer:</span>
+                <span className="text-sm font-medium text-gray-900">Retailer:</span>
                 {retailer ? (
                   <>
-                    <span className="text-sm font-semibold text-[#4A3C72]">
+                    <span className="text-sm font-semibold text-gray-900">
                       {retailer.name_plus_id || retailer.retailer_name || 'Unknown'}
                     </span>
                     {retailer.company && (
-                      <span className="text-xs text-[#837A75] ml-2">({retailer.company})</span>
+                      <span className="text-xs text-gray-500 ml-2">({retailer.company})</span>
                     )}
                     {retailer.email && (
-                      <span className="text-xs text-[#837A75] ml-3">({retailer.email})</span>
+                      <span className="text-xs text-gray-500 ml-3">({retailer.email})</span>
                     )}
                     {retailer.phone && (
-                      <span className="text-xs text-[#837A75] ml-3">({retailer.phone})</span>
+                      <span className="text-xs text-gray-500 ml-3">({retailer.phone})</span>
                     )}
                   </>
                 ) : (
-                  <span className="text-sm text-[#837A75]">Loading retailer info...</span>
+                  <span className="text-sm text-gray-500">Loading retailer info...</span>
                 )}
               </div>
               {retailer && (
@@ -440,7 +433,7 @@ const OrderPage: React.FC = () => {
                     });
                     setEditingRetailer(true);
                   }}
-                  className="text-xs bg-[#4A3C72] text-white px-2 py-1 rounded hover:bg-[#5440a8] transition-colors"
+                  className="text-xs bg-gray-900 text-white px-2 py-1 rounded hover:bg-black transition-colors"
                 >
                   Edit
                 </button>
@@ -599,52 +592,52 @@ const OrderPage: React.FC = () => {
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-4">
               <div className="grid grid-cols-2 gap-6 mb-4">
                 <div className="border-b border-gray-100 pb-3 border-r border-gray-100 pr-6">
-                  <div className="text-xs text-[#837A75] font-semibold uppercase tracking-wide">Metal</div>
-                  <div className="text-lg text-[#4A3C72] font-['Inter'] font-medium">{order.metal || '-'}</div>
+                  <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide">Metal</div>
+                  <div className="text-lg text-gray-900 font-['Inter'] font-medium">{order.metal || '-'}</div>
                 </div>
                 <div className="border-b border-gray-100 pb-3 pl-6">
-                  <div className="text-xs text-[#837A75] font-semibold uppercase tracking-wide">Stone</div>
-                  <div className="text-lg text-[#4A3C72] font-['Inter'] font-medium">{order.centerStone || '-'}</div>
+                  <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide">Stone</div>
+                  <div className="text-lg text-gray-900 font-['Inter'] font-medium">{order.centerStone || '-'}</div>
                 </div>
                 <div className="border-b border-gray-100 pb-3 border-r border-gray-100 pr-6">
-                  <div className="text-xs text-[#837A75] font-semibold uppercase tracking-wide">Size</div>
-                  <div className="text-lg text-[#4A3C72] font-['Inter'] font-medium">{order.size || '-'}</div>
+                  <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide">Size</div>
+                  <div className="text-lg text-gray-900 font-['Inter'] font-medium">{order.size || '-'}</div>
                 </div>
                 <div className="border-b border-gray-100 pb-3 pl-6">
-                  <div className="text-xs text-[#837A75] font-semibold uppercase tracking-wide">Weight</div>
-                  <div className="text-lg text-[#4A3C72] font-['Inter'] font-medium">{order.weight || '-'}</div>
+                  <div className="text-xs text-gray-500 font-semibold uppercase tracking-wide">Weight</div>
+                  <div className="text-lg text-gray-900 font-['Inter'] font-medium">{order.weight || '-'}</div>
                 </div>
               </div>
               {/* Designer Note */}
-              <div className="bg-gray-50 rounded-lg p-4 font-['Libre_Baskerville'] text-[#4A3C72]">
+              <div className="bg-gray-50 rounded-lg p-4 font-['Playfair_Display'] text-gray-900">
                 <div className="font-bold mb-2">Designer Note</div>
-                <div className="text-sm leading-relaxed">{order.description || "We've created a detailed 3D model based on your approved sketch. The proportions showcase the brilliant moissanite beautifully. Please review and approve to proceed crafting."}</div>
+                <div className="text-sm leading-relaxed text-gray-700">{order.description || "We've created a detailed 3D model based on your approved sketch. The proportions showcase the brilliant moissanite beautifully. Please review and approve to proceed crafting."}</div>
               </div>
             </div>
             {/* Variations (keep as before) */}
             {order.variations && order.variations.length > 0 && (
               <Card className="p-6 bg-white border border-gray-200 shadow-sm">
-                <h3 className="text-xl font-semibold mb-4 text-[#4A3C72] font-['Playfair_Display']">Design Variations</h3>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900 font-['Playfair_Display']">Design Variations</h3>
                 <div className="space-y-3">
                   {order.variations.map((variation: JewelryVariation) => (
                     <div
                       key={variation.id}
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      className={`p-4 rounded-lg border cursor-pointer transition-all ${
                         selectedVariation === variation.id
-                          ? 'border-[#4A3C72] bg-[#E6C2FF]' : 'border-gray-200 bg-white hover:border-[#4A3C72]/50'
+                          ? 'border-gray-900 bg-white' : 'border-gray-200 bg-white hover:border-gray-300'
                       }`}
                       onClick={() => setSelectedVariation(variation.id)}
                     >
                       <div className="flex justify-between items-start">
                         <div>
-                          <h4 className="font-medium text-[#4A3C72] font-['Inter']">{variation.name}</h4>
-                          <p className="text-sm text-[#837A75] font-['Inter']">{variation.changes}</p>
+                          <h4 className="font-medium text-gray-900 font-['Inter']">{variation.name}</h4>
+                          <p className="text-sm text-gray-500 font-['Inter']">{variation.changes}</p>
                         </div>
                         <div className="text-right">
                           {variation.price > 0 ? (
-                            <p className="font-medium text-[#4A3C72] font-['Inter']">+${variation.price}</p>
+                            <p className="font-medium text-gray-900 font-['Inter']">+${variation.price}</p>
                           ) : (
-                            <p className="text-[#837A75] font-['Inter']">Included</p>
+                            <p className="text-gray-500 font-['Inter']">Included</p>
                           )}
                         </div>
                       </div>

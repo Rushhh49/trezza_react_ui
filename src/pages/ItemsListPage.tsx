@@ -177,48 +177,43 @@ const ItemsListPage: React.FC = () => {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[#fefbf8] flex items-center justify-center">
-      <div className="text-xl text-[#4A3C72]">Loading...</div>
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="text-xl text-gray-700">Loading...</div>
     </div>
   );
   
   if (error) return (
-    <div className="min-h-screen bg-[#fefbf8] flex items-center justify-center">
+    <div className="min-h-screen bg-white flex items-center justify-center">
       <div className="text-xl text-red-600">Error: {error}</div>
     </div>
   );
 
   if (!order) return (
-    <div className="min-h-screen bg-[#fefbf8] flex items-center justify-center">
+    <div className="min-h-screen bg-white flex items-center justify-center">
       <div className="text-xl text-red-600">No order found</div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#fefbf8] font-['Inter'] flex flex-col">
+    <div className="min-h-screen bg-white font-['Inter'] flex flex-col text-[#1f2937]">
       {/* Header */}
-      <header>
-        <div className="bg-[#5440a8] h-2"></div>
-        <div className="bg-[#483395]">
-          <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">BYONDJEWELRY</h1>
-            </div>
-            <nav className="flex items-center space-x-6">
-              {/* Navigation removed as requested */}
-            </nav>
+      <header className="border-b border-gray-200 bg-white/70 backdrop-blur">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 font-['Playfair_Display']">BYONDJEWELRY</h1>
           </div>
+          <nav className="flex items-center space-x-6"></nav>
         </div>
       </header>
 
-      <div className="flex-1 max-w-7xl mx-auto px-6 py-8">
+      <div className="flex-1 max-w-7xl mx-auto px-6 py-10">
         {/* Order Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <h1 className="text-3xl font-bold text-[#4A3C72] font-['Playfair_Display'] tracking-tight">
+            <h1 className="text-3xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">
               Purchase Order: {order.po_no}
             </h1>
-            <Badge variant="secondary" className="bg-[#E6C2FF] text-[#4A3C72]">
+            <Badge variant="secondary" className="bg-gray-100 text-gray-800 border border-gray-200">
               {order.status}
             </Badge>
           </div>
@@ -226,21 +221,21 @@ const ItemsListPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <Card className="p-6 bg-white border border-gray-200 shadow-sm w-full">
               <div className="flex items-start gap-3">
-                <User className="w-6 h-6 text-[#4A3C72] mt-1" />
+                <User className="w-6 h-6 text-gray-700 mt-1" />
                 <div className="flex-1">
-                  <div className="text-xs text-[#837A75] font-semibold tracking-wide uppercase">Retailer</div>
-                  <div className="text-xl text-[#4A3C72] font-semibold">
+                  <div className="text-xs text-gray-500 font-medium tracking-wide uppercase">Retailer</div>
+                  <div className="text-xl text-gray-900 font-semibold">
                     {retailer?.retailer_name || 'N/A'}
                   </div>
                   {retailer?.company && (
-                    <div className="text-sm text-[#837A75]">{retailer.company}</div>
+                    <div className="text-sm text-gray-500">{retailer.company}</div>
                   )}
                   <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                     {retailer?.email && (
-                      <div className="text-[#4A3C72]"><span className="text-[#837A75]">Email:</span> <span className="ml-1">{retailer.email}</span></div>
+                      <div className="text-gray-900"><span className="text-gray-500">Email:</span> <span className="ml-1">{retailer.email}</span></div>
                     )}
                     {retailer?.phone && (
-                      <div className="text-[#4A3C72]"><span className="text-[#837A75]">Phone:</span> <span className="ml-1">{retailer.phone}</span></div>
+                      <div className="text-gray-900"><span className="text-gray-500">Phone:</span> <span className="ml-1">{retailer.phone}</span></div>
                     )}
                   </div>
                 </div>
@@ -249,8 +244,8 @@ const ItemsListPage: React.FC = () => {
 
             {order.description && (
               <Card className="p-6 bg-white border border-gray-200 shadow-sm w-full">
-                <div className="text-xs text-[#837A75] font-semibold tracking-wide uppercase mb-2">Order Description</div>
-                <p className="text-[#4A3C72] leading-relaxed">{order.description}</p>
+                <div className="text-xs text-gray-500 font-medium tracking-wide uppercase mb-2">Order Description</div>
+                <p className="text-gray-800 leading-relaxed">{order.description}</p>
               </Card>
             )}
           </div>
@@ -259,20 +254,20 @@ const ItemsListPage: React.FC = () => {
         {/* Items List */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-[#4A3C72] font-['Playfair_Display']">
+            <h2 className="text-2xl font-semibold text-gray-900 font-['Playfair_Display']">
               Items ({items.length})
             </h2>
             {items.length > 0 && (
-              <div className="text-sm text-[#837A75]">
+              <div className="text-sm text-gray-500">
                 Total versions across all items: {items.reduce((sum, item) => sum + (item.versions?.length || 0), 0)}
               </div>
             )}
           </div>
           
           {items.length === 0 ? (
-            <Card className="p-8 bg-white border border-gray-200 shadow-sm text-center">
-              <Package className="w-16 h-16 text-[#837A75] mx-auto mb-4" />
-              <p className="text-[#837A75] text-lg">No items found for this purchase order</p>
+            <Card className="p-12 bg-white border border-gray-200 text-center">
+              <Package className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 text-base">No items found for this purchase order</p>
             </Card>
           ) : (
             <div className="space-y-6">
@@ -282,37 +277,37 @@ const ItemsListPage: React.FC = () => {
                   className="bg-white border border-gray-200 shadow-sm"
                 >
                   {/* Item Header */}
-                  <div className="p-6 border-b bg-gray-50">
+                  <div className="p-6 border-b bg-white">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-[#4A3C72] mb-2">
+                        <h3 className="text-xl font-medium text-gray-900 mb-1 font-['Playfair_Display']">
                           {item.item_name}
                         </h3>
                       </div>
                       <div className="text-right">
-                        <Badge variant="secondary" className="bg-[#E6C2FF] text-[#4A3C72] mb-2">
+                        <Badge variant="secondary" className="bg-gray-100 text-gray-800 border border-gray-200 mb-2">
                           {item.versions?.length || 0} versions
                         </Badge>
-                        <div className="text-sm text-[#837A75]">Item ID: {item.po_i_no}</div>
+                        <div className="text-xs text-gray-500">Item ID: {item.po_i_no}</div>
                       </div>
                     </div>
                     
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <span className="text-[#837A75]">Quantity:</span>
-                        <span className="font-medium text-[#4A3C72] ml-2">
+                        <span className="text-gray-500">Quantity:</span>
+                        <span className="font-medium text-gray-900 ml-2">
                           {item.Quantity || 'N/A'}
                         </span>
                       </div>
                       <div>
-                        <span className="text-[#837A75]">Order Ref:</span>
-                        <span className="font-medium text-[#4A3C72] ml-2">
+                        <span className="text-gray-500">Order Ref:</span>
+                        <span className="font-medium text-gray-900 ml-2">
                           {item.fkb_orders_to_items}
                         </span>
                       </div>
                       <div>
-                        <span className="text-[#837A75]">Item Type:</span>
-                        <span className="font-medium text-[#4A3C72] ml-2">
+                        <span className="text-gray-500">Item Type:</span>
+                        <span className="font-medium text-gray-900 ml-2">
                           {item.item_type || 'N/A'}
                         </span>
                       </div>
@@ -322,12 +317,12 @@ const ItemsListPage: React.FC = () => {
                   {/* Item Content - Simplified without tabs */}
                   <div className="p-6">
                     <div className="space-y-4">
-                      <h4 className="text-lg font-semibold text-[#4A3C72]">Item Summary</h4>
-                      <p className="text-[#837A75]">
+                      <h4 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">Item Summary</h4>
+                      <p className="text-gray-600">
                         This item has {item.versions?.length || 0} versions. Click below to view detailed information or manage versions.
                       </p>
                       {item.versions && item.versions.length > 0 && (
-                        <div className="text-xs text-[#837A75] bg-gray-50 p-2 rounded">
+                        <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded border border-gray-200">
                           <strong>Version IDs:</strong> {item.versions.map(v => v.id).join(', ')}
                         </div>
                       )}
@@ -337,7 +332,7 @@ const ItemsListPage: React.FC = () => {
                   <div className="px-6 pb-6">
                     <button
                       onClick={() => handleItemClick(item)}
-                      className="w-full bg-[#4A3C72] text-white py-2 px-4 rounded-lg hover:bg-[#5440a8] transition-colors flex items-center justify-center gap-2"
+                      className="w-full bg-gray-900 text-white py-2 px-4 rounded-md hover:bg-black transition-colors flex items-center justify-center gap-2 shadow-sm"
                     >
                       <Eye className="w-4 h-4" />
                       View Details
