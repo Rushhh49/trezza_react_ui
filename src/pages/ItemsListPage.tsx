@@ -280,12 +280,7 @@ const ItemsListPage: React.FC = () => {
                           {item.item_name}
                         </h3>
                       </div>
-                      <div className="text-right">
-                        <Badge variant="secondary" className="bg-gray-100 text-gray-800 border border-gray-200 mb-2">
-                          {item.versions?.length || 0} versions
-                        </Badge>
-                        <div className="text-xs text-gray-500">Item ID: {item.po_i_no}</div>
-                      </div>
+                      <div className="text-right"></div>
                     </div>
                     
                     <div className="grid grid-cols-3 gap-4 text-sm">
@@ -314,14 +309,7 @@ const ItemsListPage: React.FC = () => {
                   <div className="p-6">
                     <div className="space-y-4">
                       <h4 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">Item Summary</h4>
-                      <p className="text-gray-600">
-                        This item has {item.versions?.length || 0} versions. Click below to view detailed information or manage versions.
-                      </p>
-                      {item.versions && item.versions.length > 0 && (
-                        <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded border border-gray-200">
-                          <strong>Version IDs:</strong> {item.versions.map(v => v.id).join(', ')}
-                        </div>
-                      )}
+                      <p className="text-gray-600">This item has {item.versions?.length || 0} versions.</p>
                     </div>
                   </div>
                   

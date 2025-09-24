@@ -533,14 +533,6 @@ const ItemDetailPage: React.FC = () => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-lg text-gray-500 font-semibold">Item ID</div>
-                  <div className="text-sm text-gray-900 font-medium">{item.po_i_no}</div>
-                </div>
-                <div>
-                  <div className="text-lg text-gray-500 font-semibold">Quantity</div>
-                  <div className="text-sm text-gray-900 font-medium">{item.Quantity || 'N/A'}</div>
-                </div>
-                <div>
                   <div className="text-lg text-gray-500 font-semibold">Purchase Order</div>
                   <div className="text-sm text-gray-900 font-medium">{item.fkb_orders_to_items}</div>
                 </div>
