@@ -225,9 +225,9 @@ const ItemsListPage: React.FC = () => {
                 <div className="flex-1">
                   <div className="text-xs text-gray-500 font-medium tracking-wide uppercase">Retailer</div>
                   <div className="text-xl text-gray-900 font-semibold">
-                    {retailer?.retailer_name || 'N/A'}
+                    {retailer?.company || 'N/A'}
                   </div>
-                  {retailer?.company && (
+                  {/* {retailer?.company && (retailer?.retailer_name
                     <div className="text-sm text-gray-500">{retailer.company}</div>
                   )}
                   <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
@@ -237,7 +237,7 @@ const ItemsListPage: React.FC = () => {
                     {retailer?.phone && (
                       <div className="text-gray-900"><span className="text-gray-500">Phone:</span> <span className="ml-1">{retailer.phone}</span></div>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </Card>
