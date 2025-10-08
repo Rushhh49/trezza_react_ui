@@ -197,7 +197,7 @@ const ItemsListPage: React.FC = () => {
       <header className="border-b border-gray-200 bg-white/70 backdrop-blur">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 font-['Playfair_Display']">BYONDJEWELRY</h1>
+            <h1 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 font-['Playfair_Display']">YOURCUSTOMJEWELRY</h1>
           </div>
           <nav className="flex items-center space-x-6"></nav>
         </div>
@@ -329,7 +329,7 @@ const ItemsListPage: React.FC = () => {
       {/* Footer */}
       <footer className="border-t border-gray-200 py-4 mt-auto bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center text-gray-500 text-sm">© 2024 BYONDJEWELRY. All rights reserved.</div>
+          <div className="text-center text-gray-500 text-sm">© 2024 YOURCUSTOMJEWELRY. All rights reserved.</div>
         </div>
       </footer>
     </div>
