@@ -415,14 +415,14 @@ const ItemDetailPage: React.FC = () => {
       <div className="flex-1 max-w-7xl mx-auto px-6 py-10">
         {/* Back Button and Header */}
         <div className="mb-6">
-          <Button 
+          {/* <Button 
             variant="ghost" 
             onClick={goBack}
             className="mb-4 text-gray-700 hover:bg-gray-100"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Items
-          </Button>
+          </Button> */}
           
           <div className="flex items-center gap-4 mb-4">
             <h1 className="text-3xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">
