@@ -12,6 +12,7 @@ import {
   CarouselNext,
 } from '@/components/ui/carousel';
 import { X } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { API_CONFIG, getAuthHeaders } from '@/config/api';
 
 interface ItemData {
@@ -103,6 +104,7 @@ const ItemDetailPage: React.FC = () => {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [mainVideoIndex, setMainVideoIndex] = useState(0);
   const [main3dIndex, setMain3dIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState<'CAD' | 'Video' | 'Images' | 'Sketch'>('Images');
   
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -270,6 +272,34 @@ const ItemDetailPage: React.FC = () => {
     fetchVersionMedia();
   }, [currentVersion]);
 
+  // Choose default tab based on availability (CAD > Video > Images > Sketch)
+  useEffect(() => {
+    if (currentVersion?.ijewel_model_id) {
+      setActiveTab('CAD');
+      return;
+    }
+    if (videos.length > 0) {
+      setActiveTab('Video');
+      return;
+    }
+    if ((images.length + cads.length + renders.length) > 0) {
+      setActiveTab('Images');
+      return;
+    }
+    if (sketches.length > 0) {
+      setActiveTab('Sketch');
+      return;
+    }
+    setActiveTab('Images');
+  }, [currentVersion?.ijewel_model_id, videos.length, images.length, cads.length, renders.length, sketches.length]);
+
+  // Reset indices when switching tabs
+  useEffect(() => {
+    setMainImageIndex(0);
+    setMainVideoIndex(0);
+    setMain3dIndex(0);
+  }, [activeTab]);
+
   const handleVersionChange = (version: VersionData) => {
     setCurrentVersion(version);
     // Reset media indices
@@ -300,14 +330,20 @@ const ItemDetailPage: React.FC = () => {
     </div>
   );
 
-  // Combine all media for carousel (videos first, then images, then 3D files)
-  const allMedia = [
+  // Build media per active tab
+  const videoMedia = [
     ...videos.map(v => ({ ...v, type: 'video' as const })),
+  ];
+  const imageMedia = [
     ...images.map(i => ({ ...i, type: 'image' as const })),
     ...cads.map(c => ({ ...c, type: '3d' as const })),
     ...renders.map(r => ({ ...r, type: '3d' as const })),
-    ...sketches.map(s => ({ ...s, type: 'image' as const }))
   ];
+  const sketchMedia = [
+    ...sketches.map(s => ({ ...s, type: 'image' as const })),
+  ];
+
+  const allMedia = activeTab === 'Video' ? videoMedia : activeTab === 'Sketch' ? sketchMedia : imageMedia;
 
   return (
     <div className="min-h-screen bg-white font-['Inter'] flex flex-col">
@@ -369,8 +405,20 @@ const ItemDetailPage: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-8 items-start w-full">
           {/* Media Container */}
           <div className="w-full lg:w-[500px] flex-shrink-0 flex flex-col items-center">
-            {/* CAD Viewer (iframe) - show if ijewel_model_id exists */}
-            {currentVersion.ijewel_model_id && (
+            {/* Media Tabs */}
+            <div className="w-full mb-4">
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="CAD" disabled={!currentVersion.ijewel_model_id}>CAD</TabsTrigger>
+                  <TabsTrigger value="Video" disabled={videos.length === 0}>Video</TabsTrigger>
+                  <TabsTrigger value="Images" disabled={(images.length + cads.length + renders.length) === 0}>Images</TabsTrigger>
+                  <TabsTrigger value="Sketch" disabled={sketches.length === 0}>Sketch</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
+            {/* CAD Viewer (iframe) */}
+            {activeTab === 'CAD' && currentVersion.ijewel_model_id && (
               <div className="w-full mb-4 rounded-lg overflow-hidden border border-gray-200">
                 <iframe
                   title="CAD Viewer"
@@ -386,8 +434,9 @@ const ItemDetailPage: React.FC = () => {
               </div>
             )}
             {/* Main media display */}
-            <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4">
-              {allMedia.length > 0 ? (
+            {activeTab !== 'CAD' && (
+              <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4">
+                {allMedia.length > 0 ? (
                 allMedia[mainImageIndex].type === 'video' ? (
                   <video
                     src={API_CONFIG.BASE_URL + allMedia[mainImageIndex].url}
@@ -420,16 +469,17 @@ const ItemDetailPage: React.FC = () => {
                     onClick={() => { setModalType('image'); setModalIndex(mainImageIndex); setModalOpen(true); }}
                   />
                 )
-              ) : (
-                <div className="text-[#837A75] text-center">
-                  <Image className="w-16 h-16 mx-auto mb-2 text-[#837A75]" />
-                  <p>No media available</p>
-                </div>
-              )}
-            </div>
+                ) : (
+                  <div className="text-[#837A75] text-center">
+                    <Image className="w-16 h-16 mx-auto mb-2 text-[#837A75]" />
+                    <p>No media available</p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Media carousel */}
-            {allMedia.length > 1 && (
+            {activeTab !== 'CAD' && allMedia.length > 1 && (
               <Carousel className="w-full max-w-[400px]">
                 <CarouselContent>
                   {allMedia.map((media, index) => (
