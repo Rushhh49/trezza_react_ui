@@ -236,6 +236,7 @@ const ItemDetailPage: React.FC = () => {
     if (!item) return;
     // When item changes (including via PO toggle), refetch versions for that item
     const fetchVersionsForItem = async () => {
+      setLoading(true);
       try {
         const versionsFilter = encodeURIComponent(JSON.stringify({
           $and: [
@@ -253,6 +254,8 @@ const ItemDetailPage: React.FC = () => {
         }
       } catch (e) {
         console.warn('Failed to fetch versions for item:', e);
+      } finally {
+        setLoading(false);
       }
     };
     fetchVersionsForItem();
@@ -435,7 +438,7 @@ const ItemDetailPage: React.FC = () => {
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Item</h3>
             <div className="flex gap-2 flex-wrap">
-              {itemsInOrder.map((itm) => (
+              {itemsInOrder.map((itm, idx) => (
                 <Button
                   key={itm.id}
                   variant={item?.id === itm.id ? "default" : "outline"}
@@ -449,7 +452,7 @@ const ItemDetailPage: React.FC = () => {
                     "border-gray-300 text-gray-700 hover:bg-gray-100"
                   }
                 >
-                  {itm.item_name}
+                  {`Item ${idx + 1}`}
                 </Button>
               ))}
             </div>
