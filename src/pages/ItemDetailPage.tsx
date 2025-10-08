@@ -610,47 +610,19 @@ const ItemDetailPage: React.FC = () => {
             )}
           </div>
 
-          {/* Details and Specifications */}
+          {/* Details */}
           <div className="flex-1 w-full max-w-2xl mx-auto lg:mx-0">
-            {/* Version Information */}
             <Card className="p-6 bg-white border border-gray-200 shadow-sm mb-6">
-              <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">
-                Version Details
-              </h3>
+              <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* <div>
-                  <div className="text-lg text-gray-500 font-semibold">Version Name</div>
-                  <div className="text-sm text-gray-900 font-medium">{currentVersion.version_name}</div>
-                </div> */}
                 <div>
-                  <div className="text-lg text-gray-500 font-semibold">Version Number</div>
-                  <div className="text-sm text-gray-900 font-medium">{currentVersion.version_number}</div>
+                  <div className="text-lg text-gray-500 font-semibold">Purchase Order</div>
+                  <div className="text-sm text-gray-900 font-medium">{item.fkb_orders_to_items}</div>
                 </div>
                 {currentVersion.item_size && (
                   <div>
-                    <div className="text-lg text-gray-500 font-semibold">Size</div>
+                    <div className="text-lg text-gray-500 font-semibold">Item Size</div>
                     <div className="text-sm text-gray-900 font-medium">{currentVersion.item_size}</div>
-                  </div>
-                )}
-                {currentVersion.version_quantity && (
-                  <div>
-                    <div className="text-lg text-gray-500 font-semibold">Quantity</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.version_quantity}</div>
-                  </div>
-                )}
-              </div>
-            </Card>
-
-            {/* Technical Specifications */}
-            <Card className="p-6 bg-white border border-gray-200 shadow-sm mb-6">
-              <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">
-                Technical Specifications
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {currentVersion.metal_type && (
-                  <div>
-                    <div className="text-lg text-gray-500 font-semibold">Metal Type</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.metal_type}</div>
                   </div>
                 )}
                 {currentVersion.metal_color && (
@@ -659,43 +631,18 @@ const ItemDetailPage: React.FC = () => {
                     <div className="text-sm text-gray-900 font-medium">{currentVersion.metal_color}</div>
                   </div>
                 )}
-                {currentVersion.center_stone_info && (
+                {currentVersion.metal_type && (
                   <div>
-                    <div className="text-lg text-gray-500 font-semibold">Center Stone</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.center_stone_info}</div>
+                    <div className="text-lg text-gray-500 font-semibold">Metal Type</div>
+                    <div className="text-sm text-gray-900 font-medium">{currentVersion.metal_type}</div>
                   </div>
                 )}
-                {currentVersion.melee_stones_info && (
+                {currentVersion.version_quantity && (
                   <div>
-                    <div className="text-lg text-gray-500 font-semibold">Melee Stones</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.melee_stones_info}</div>
+                    <div className="text-lg text-gray-500 font-semibold">Quantity</div>
+                    <div className="text-sm text-gray-900 font-medium">{currentVersion.version_quantity}</div>
                   </div>
                 )}
-                {currentVersion.stamp_engraving && (
-                  <div>
-                    <div className="text-lg text-gray-500 font-semibold">Stamp/Engraving</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.stamp_engraving}</div>
-                  </div>
-                )}
-                {currentVersion.item_description && (
-                  <div className="md:col-span-2">
-                    <div className="text-lg text-gray-500 font-semibold">Version Description</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.item_description}</div>
-                  </div>
-                )}
-              </div>
-            </Card>
-
-            {/* Item Information */}
-            <Card className="p-6 bg-white border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">
-                Item Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <div className="text-lg text-gray-500 font-semibold">Purchase Order</div>
-                  <div className="text-sm text-gray-900 font-medium">{item.fkb_orders_to_items}</div>
-                </div>
               </div>
             </Card>
           </div>
