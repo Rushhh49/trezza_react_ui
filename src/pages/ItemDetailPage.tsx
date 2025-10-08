@@ -194,32 +194,31 @@ const ItemDetailPage: React.FC = () => {
         
         // Only fetch versions from API if none were passed from navigation state
         if (!purchaseNumber && (!navigationState?.versions || navigationState.versions.length === 0)) {
-          console.log('No versions from navigation state, fetching from API...');
-          // Fetch versions only for this item using JSON filter and appends
-          const versionsFilter = encodeURIComponent(JSON.stringify({
-            $and: [
-              { f_s201x17a2bx: { po_i_no: { $eq: (navigationState?.itemData?.po_i_no || itemId) } } }
-            ]
-          }));
-          const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=100&page=1&appends[]=references&appends[]=f_s201x17a2bx&filter=${versionsFilter}`;
-          const versionsResponse = await fetch(versionsUrl, { headers: getAuthHeaders() });
-          
-          if (!versionsResponse.ok) {
-            const errorText = await versionsResponse.text();
-            console.error('Versions API response:', versionsResponse.status, versionsResponse.statusText);
-            console.error('Error response body:', errorText);
-            throw new Error(`Failed to fetch versions: ${versionsResponse.status} ${versionsResponse.statusText}`);
-          }
-          
-          const versionsData = await versionsResponse.json();
-          const itemVersions = Array.isArray(versionsData.data) ? versionsData.data : [];
-          
-          // Sort by version number (highest first)
-          itemVersions.sort((a: any, b: any) => b.version_number - a.version_number);
-          setVersions(itemVersions);
-          
-          if (itemVersions.length > 0) {
-            setCurrentVersion(itemVersions[0]); // Set to latest version
+          // Only fetch versions here if we have item's po_i_no from navigation state.
+          // Otherwise, we'll fetch versions in the separate effect once item is loaded.
+          const po_i_no = navigationState?.itemData?.po_i_no;
+          if (po_i_no) {
+            console.log('Fetching versions from API using navigation item po_i_no...');
+            const versionsFilter = encodeURIComponent(JSON.stringify({
+              $and: [
+                { v_i_fk: { po_i_no: { $eq: po_i_no } } }
+              ]
+            }));
+            const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=100&page=1&sort[]=-updatedAt&appends[]=v_i_fk&filter=${versionsFilter}`;
+            const versionsResponse = await fetch(versionsUrl, { headers: getAuthHeaders() });
+            if (!versionsResponse.ok) {
+              const errorText = await versionsResponse.text();
+              console.error('Versions API response:', versionsResponse.status, versionsResponse.statusText);
+              console.error('Error response body:', errorText);
+              throw new Error(`Failed to fetch versions: ${versionsResponse.status} ${versionsResponse.statusText}`);
+            }
+            const versionsData = await versionsResponse.json();
+            const itemVersions = Array.isArray(versionsData.data) ? versionsData.data : [];
+            itemVersions.sort((a: any, b: any) => b.version_number - a.version_number);
+            setVersions(itemVersions);
+            if (itemVersions.length > 0) {
+              setCurrentVersion(itemVersions[0]);
+            }
           }
         }
         
@@ -240,10 +239,10 @@ const ItemDetailPage: React.FC = () => {
       try {
         const versionsFilter = encodeURIComponent(JSON.stringify({
           $and: [
-            { f_s201x17a2bx: { po_i_no: { $eq: item.po_i_no } } }
+            { v_i_fk: { po_i_no: { $eq: item.po_i_no } } }
           ]
         }));
-        const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=100&page=1&appends[]=references&appends[]=f_s201x17a2bx&filter=${versionsFilter}`;
+        const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=100&page=1&sort[]=-updatedAt&appends[]=v_i_fk&filter=${versionsFilter}`;
         const versionsResponse = await fetch(versionsUrl, { headers: getAuthHeaders() });
         if (versionsResponse.ok) {
           const versionsData = await versionsResponse.json();
