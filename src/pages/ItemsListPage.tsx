@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Package, Eye, User } from 'lucide-react';
 import { API_CONFIG, getAuthHeaders } from '@/config/api';
+import LoadingScreen from '@/components/ui/loading-screen';
 
 interface OrderData {
   id: number;
@@ -176,11 +177,7 @@ const ItemsListPage: React.FC = () => {
     });
   };
 
-  if (loading) return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="text-xl text-gray-700">Loading...</div>
-    </div>
-  );
+  if (loading) return (<LoadingScreen />);
   
   if (error) return (
     <div className="min-h-screen bg-white flex items-center justify-center">

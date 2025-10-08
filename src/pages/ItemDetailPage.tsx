@@ -14,6 +14,7 @@ import {
 import { X } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { API_CONFIG, getAuthHeaders } from '@/config/api';
+import LoadingScreen from '@/components/ui/loading-screen';
 
 interface ItemData {
   id: number;
@@ -312,14 +313,7 @@ const ItemDetailPage: React.FC = () => {
     navigate(-1);
   };
 
-  if (loading) return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <div className="h-8 w-8 rounded-full border-2 border-[#E6C2FF] border-t-[#4A3C72] animate-spin"></div>
-        <div className="text-sm tracking-wide uppercase text-[#837A75]">Curating your jewelry...</div>
-      </div>
-    </div>
-  );
+  if (loading) return (<LoadingScreen />);
   
   if (error) return (
     <div className="min-h-screen bg-white flex items-center justify-center">

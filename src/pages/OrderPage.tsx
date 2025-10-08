@@ -17,6 +17,7 @@ declare global {
 }
 
 import React, { useEffect, useState } from "react";
+import LoadingScreen from '@/components/ui/loading-screen';
 import { useParams } from "react-router-dom";
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -353,7 +354,7 @@ const OrderPage: React.FC = () => {
     }
   }, [order, selectedVariation]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (<LoadingScreen />);
   if (error) return <div>Error: {error}</div>;
   if (!order) return <div>No order data found.</div>;
 
