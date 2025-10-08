@@ -19,6 +19,7 @@ import LoadingScreen from '@/components/ui/loading-screen';
 interface ItemData {
   id: number;
   item_name: string;
+  new_name: string;
   item_description: string;
   Quantity: number | null;
   po_i_no: string;
@@ -425,7 +426,7 @@ const ItemDetailPage: React.FC = () => {
           
           <div className="flex items-center gap-4 mb-4">
             <h1 className="text-3xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">
-              {item.item_name}
+              {item.new_name}
             </h1>
             <Badge variant="secondary" className="bg-gray-100 text-gray-800 border border-gray-200">
               Version {currentVersion.version_number}
@@ -452,7 +453,8 @@ const ItemDetailPage: React.FC = () => {
                     "border-gray-300 text-gray-700 hover:bg-gray-100"
                   }
                 >
-                  {`Item ${idx + 1}`}
+                  {/* {`Item ${idx + 1}`} */}
+                  {itm.new_name}
                 </Button>
               ))}
             </div>
