@@ -491,9 +491,9 @@ const ItemDetailPage: React.FC = () => {
             <div className="w-full mb-4">
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
                 <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="CAD" disabled={!currentVersion.ijewel_model_id}>CAD</TabsTrigger>
-                  <TabsTrigger value="Video" disabled={videos.length === 0}>Video</TabsTrigger>
-                  <TabsTrigger value="Images" disabled={(images.length + cads.length + renders.length) === 0}>Images</TabsTrigger>
+                  <TabsTrigger value="CAD" disabled={!currentVersion.ijewel_model_id}>3D Model</TabsTrigger>
+                  {/* <TabsTrigger value="Video" disabled={videos.length === 0}>Video</TabsTrigger> */}
+                  <TabsTrigger value="Images" disabled={(images.length + cads.length + renders.length) === 0}>CAD</TabsTrigger>
                   <TabsTrigger value="Sketch" disabled={sketches.length === 0}>Sketch</TabsTrigger>
                 </TabsList>
               </Tabs>
