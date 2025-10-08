@@ -33,7 +33,7 @@ interface VersionData {
   version_name: string;
   item_size: string | null;
   item_description: string | null;
-  metal_type: string | null;
+  metal_type1: string | null;
   metal_color: string | null;
   stamp_engraving: string | null;
   melee_stones_info: string | null;
@@ -430,13 +430,11 @@ const ItemDetailPage: React.FC = () => {
             Back to Items
           </Button> */}
           
-          <div className="flex items-center gap-4 mb-4">
+          <div className="mb-4">
+            <div className="text-sm text-gray-500 mb-1">Purchase Order: {item.fkb_orders_to_items}</div>
             <h1 className="text-3xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">
               {item.new_name}
             </h1>
-            {/* <Badge variant="secondary" className="bg-gray-100 text-gray-800 border border-gray-200">
-              Version {currentVersion.version_number}
-            </Badge> */}
           </div>
         </div>
 
@@ -615,10 +613,6 @@ const ItemDetailPage: React.FC = () => {
             <Card className="p-6 bg-white border border-gray-200 shadow-sm mb-6">
               <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <div className="text-lg text-gray-500 font-semibold">Purchase Order</div>
-                  <div className="text-sm text-gray-900 font-medium">{item.fkb_orders_to_items}</div>
-                </div>
                 {currentVersion.item_size && (
                   <div>
                     <div className="text-lg text-gray-500 font-semibold">Item Size</div>
@@ -631,16 +625,10 @@ const ItemDetailPage: React.FC = () => {
                     <div className="text-sm text-gray-900 font-medium">{currentVersion.metal_color}</div>
                   </div>
                 )}
-                {currentVersion.metal_type && (
+                {currentVersion.metal_type1 && (
                   <div>
                     <div className="text-lg text-gray-500 font-semibold">Metal Type</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.metal_type}</div>
-                  </div>
-                )}
-                {currentVersion.version_quantity && (
-                  <div>
-                    <div className="text-lg text-gray-500 font-semibold">Quantity</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.version_quantity}</div>
+                    <div className="text-sm text-gray-900 font-medium">{currentVersion.metal_type1}</div>
                   </div>
                 )}
               </div>
