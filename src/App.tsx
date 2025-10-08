@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import ItemsListPage from "./pages/ItemsListPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
 
 const App: React.FC = () => {
@@ -9,7 +8,7 @@ const App: React.FC = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/order/:purchaseNumber" element={<ItemsListPage />} />
+        <Route path="/order/:purchaseNumber" element={<ItemDetailPage />} />
         <Route path="/item/:itemId" element={<ItemDetailPage />} />
       </Routes>
     </BrowserRouter>

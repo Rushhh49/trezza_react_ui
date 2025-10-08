@@ -23,6 +23,7 @@ interface ItemData {
   Quantity: number | null;
   po_i_no: string;
   fkb_orders_to_items: string;
+  item_type?: string;
 }
 
 interface VersionData {
@@ -88,9 +89,11 @@ function useModelViewerScript() {
 const ItemDetailPage: React.FC = () => {
   useModelViewerScript();
   const { itemId } = useParams<{ itemId: string }>();
+  const { purchaseNumber } = useParams<{ purchaseNumber: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const [item, setItem] = useState<ItemData | null>(null);
+  const [itemsInOrder, setItemsInOrder] = useState<ItemData[]>([]);
   const [versions, setVersions] = useState<VersionData[]>([]);
   const [currentVersion, setCurrentVersion] = useState<VersionData | null>(null);
   const [images, setImages] = useState<ReferenceFile[]>([]);
@@ -113,6 +116,36 @@ const ItemDetailPage: React.FC = () => {
   const [modalIndex, setModalIndex] = useState(0);
 
   useEffect(() => {
+    // If navigated via PO number route, fetch items for that order
+    if (purchaseNumber) {
+      const fetchItemsForOrder = async () => {
+        setLoading(true);
+        setError("");
+        try {
+          const itemsFilter = encodeURIComponent(JSON.stringify({
+            $and: [
+              { order_id: { po_no: { $eq: String(purchaseNumber) } } }
+            ]
+          }));
+          const itemsUrl = `${API_CONFIG.BASE_URL}/api/items:list?pageSize=100&page=1&sort[]=createdAt&appends[]=order_id&filter=${itemsFilter}`;
+          const res = await fetch(itemsUrl, { headers: getAuthHeaders() });
+          if (!res.ok) throw new Error('Failed to fetch items for order');
+          const data = await res.json();
+          const orderItems: ItemData[] = Array.isArray(data.data) ? data.data : [];
+          // Sort by creation ascending (already sorted), set state
+          setItemsInOrder(orderItems);
+          if (orderItems.length > 0) {
+            setItem(orderItems[0]);
+          }
+        } catch (e: any) {
+          setError(e.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchItemsForOrder();
+      return;
+    }
     if (!itemId) return;
     
     // Log the navigation state for debugging
@@ -133,7 +166,7 @@ const ItemDetailPage: React.FC = () => {
         }
         
         // Use versions data from navigation state if available
-        if (navigationState?.versions && navigationState.versions.length > 0) {
+        if (!purchaseNumber && navigationState?.versions && navigationState.versions.length > 0) {
           console.log('Using versions from navigation state:', navigationState.versions);
           // Sort by version number (highest first)
           const sortedVersions = [...navigationState.versions].sort((a: any, b: any) => b.version_number - a.version_number);
@@ -142,7 +175,7 @@ const ItemDetailPage: React.FC = () => {
         }
         
         // Only fetch item details from API if none were passed from navigation state
-        if (!navigationState?.itemData) {
+        if (!purchaseNumber && !navigationState?.itemData) {
           console.log('No item data from navigation state, fetching from API...');
           const itemResponse = await fetch(`${API_CONFIG.BASE_URL}/api/items:get:${itemId}`, {
             headers: getAuthHeaders()
@@ -160,7 +193,7 @@ const ItemDetailPage: React.FC = () => {
         }
         
         // Only fetch versions from API if none were passed from navigation state
-        if (!navigationState?.versions || navigationState.versions.length === 0) {
+        if (!purchaseNumber && (!navigationState?.versions || navigationState.versions.length === 0)) {
           console.log('No versions from navigation state, fetching from API...');
           // Fetch versions only for this item using JSON filter and appends
           const versionsFilter = encodeURIComponent(JSON.stringify({
@@ -201,11 +234,36 @@ const ItemDetailPage: React.FC = () => {
   }, [itemId, location.state]);
 
   useEffect(() => {
+    if (!item) return;
+    // When item changes (including via PO toggle), refetch versions for that item
+    const fetchVersionsForItem = async () => {
+      try {
+        const versionsFilter = encodeURIComponent(JSON.stringify({
+          $and: [
+            { f_s201x17a2bx: { po_i_no: { $eq: item.po_i_no } } }
+          ]
+        }));
+        const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=100&page=1&appends[]=references&appends[]=f_s201x17a2bx&filter=${versionsFilter}`;
+        const versionsResponse = await fetch(versionsUrl, { headers: getAuthHeaders() });
+        if (versionsResponse.ok) {
+          const versionsData = await versionsResponse.json();
+          const itemVersions = Array.isArray(versionsData.data) ? versionsData.data : [];
+          itemVersions.sort((a: any, b: any) => b.version_number - a.version_number);
+          setVersions(itemVersions);
+          setCurrentVersion(itemVersions[0] || null);
+        }
+      } catch (e) {
+        console.warn('Failed to fetch versions for item:', e);
+      }
+    };
+    fetchVersionsForItem();
+  }, [item]);
+  useEffect(() => {
     if (!currentVersion) return;
     
     const fetchVersionMedia = async () => {
       try {
-        // Fetch references (images and videos)
+        // Fetch references (images and videos) for selected item
         try {
           const refsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/references:list`, {
             headers: getAuthHeaders()
@@ -223,7 +281,7 @@ const ItemDetailPage: React.FC = () => {
           console.warn('Failed to fetch references:', err);
         }
         
-        // Fetch CAD files (list endpoint similar to references)
+        // Fetch CAD files (list endpoint similar to references) for selected item
         try {
           const cadsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/cad_file:list`, {
             headers: getAuthHeaders()
@@ -236,7 +294,7 @@ const ItemDetailPage: React.FC = () => {
           console.warn('Failed to fetch CAD files:', err);
         }
 
-        // Fetch render files (list endpoint similar to references)
+        // Fetch render files (list endpoint similar to references) for selected item
         try {
           const rendersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/render_file:list`, {
             headers: getAuthHeaders()
@@ -249,7 +307,7 @@ const ItemDetailPage: React.FC = () => {
           console.warn('Failed to fetch render files:', err);
         }
 
-        // Fetch sketch files (list endpoint similar to references)
+        // Fetch sketch files (list endpoint similar to references) for selected item
         try {
           const sketchesResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/sketch_file:list`, {
             headers: getAuthHeaders()
@@ -373,6 +431,32 @@ const ItemDetailPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Item Toggle (if navigated via PO) */}
+        {purchaseNumber && itemsInOrder.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Item</h3>
+            <div className="flex gap-2 flex-wrap">
+              {itemsInOrder.map((itm) => (
+                <Button
+                  key={itm.id}
+                  variant={item?.id === itm.id ? "default" : "outline"}
+                  onClick={() => {
+                    setItem(itm);
+                    setVersions([]);
+                    setCurrentVersion(null);
+                  }}
+                  className={item?.id === itm.id ? 
+                    "bg-gray-900 text-white" : 
+                    "border-gray-300 text-gray-700 hover:bg-gray-100"
+                  }
+                >
+                  {itm.item_name}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Version Selector */}
         {versions.length > 1 && (
           <div className="mb-8">
@@ -381,9 +465,9 @@ const ItemDetailPage: React.FC = () => {
               {versions.map((version) => (
                 <Button
                   key={version.id}
-                  variant={currentVersion.id === version.id ? "default" : "outline"}
+                  variant={currentVersion && currentVersion.id === version.id ? "default" : "outline"}
                   onClick={() => handleVersionChange(version)}
-                  className={currentVersion.id === version.id ? 
+                  className={currentVersion && currentVersion.id === version.id ? 
                     "bg-gray-900 text-white" : 
                     "border-gray-300 text-gray-700 hover:bg-gray-100"
                   }
