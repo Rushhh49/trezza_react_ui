@@ -109,7 +109,7 @@ const ItemDetailPage: React.FC = () => {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [mainVideoIndex, setMainVideoIndex] = useState(0);
   const [main3dIndex, setMain3dIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<'CAD' | 'Video' | 'Images' | 'Sketch'>('Images');
+  const [activeTab, setActiveTab] = useState<'CAD' | 'Images' | 'Sketch'>('Images');
   
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -331,14 +331,10 @@ const ItemDetailPage: React.FC = () => {
     fetchVersionMedia();
   }, [currentVersion]);
 
-  // Choose default tab based on availability (CAD > Video > Images > Sketch)
+  // Choose default tab based on availability (CAD > Images > Sketch)
   useEffect(() => {
     if (currentVersion?.ijewel_model_id) {
       setActiveTab('CAD');
-      return;
-    }
-    if (videos.length > 0) {
-      setActiveTab('Video');
       return;
     }
     if ((images.length + cads.length + renders.length) > 0) {
@@ -350,7 +346,21 @@ const ItemDetailPage: React.FC = () => {
       return;
     }
     setActiveTab('Images');
-  }, [currentVersion?.ijewel_model_id, videos.length, images.length, cads.length, renders.length, sketches.length]);
+  }, [currentVersion?.ijewel_model_id, images.length, cads.length, renders.length, sketches.length]);
+
+  // Ensure active tab remains valid when availability changes
+  useEffect(() => {
+    const hasCadIframe = Boolean(currentVersion?.ijewel_model_id);
+    const hasImages = (images.length + cads.length + renders.length) > 0;
+    const hasSketch = sketches.length > 0;
+    if (activeTab === 'CAD' && !hasCadIframe) {
+      setActiveTab(hasImages ? 'Images' : hasSketch ? 'Sketch' : 'Images');
+    } else if (activeTab === 'Images' && !hasImages) {
+      setActiveTab(hasCadIframe ? 'CAD' : hasSketch ? 'Sketch' : 'Images');
+    } else if (activeTab === 'Sketch' && !hasSketch) {
+      setActiveTab(hasCadIframe ? 'CAD' : hasImages ? 'Images' : 'Images');
+    }
+  }, [activeTab, currentVersion?.ijewel_model_id, images.length, cads.length, renders.length, sketches.length]);
 
   // Reset indices when switching tabs
   useEffect(() => {
@@ -386,9 +396,6 @@ const ItemDetailPage: React.FC = () => {
   );
 
   // Build media per active tab
-  const videoMedia = [
-    ...videos.map(v => ({ ...v, type: 'video' as const })),
-  ];
   const imageMedia = [
     ...images.map(i => ({ ...i, type: 'image' as const })),
     ...cads.map(c => ({ ...c, type: '3d' as const })),
@@ -397,8 +404,7 @@ const ItemDetailPage: React.FC = () => {
   const sketchMedia = [
     ...sketches.map(s => ({ ...s, type: 'image' as const })),
   ];
-
-  const allMedia = activeTab === 'Video' ? videoMedia : activeTab === 'Sketch' ? sketchMedia : imageMedia;
+  const allMedia = activeTab === 'Sketch' ? sketchMedia : imageMedia;
 
   return (
     <div className="min-h-screen bg-white font-['Inter'] flex flex-col">
@@ -490,11 +496,16 @@ const ItemDetailPage: React.FC = () => {
             {/* Media Tabs */}
             <div className="w-full mb-4">
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="CAD" disabled={!currentVersion.ijewel_model_id}>3D Model</TabsTrigger>
-                  {/* <TabsTrigger value="Video" disabled={videos.length === 0}>Video</TabsTrigger> */}
-                  <TabsTrigger value="Images" disabled={(images.length + cads.length + renders.length) === 0}>CAD</TabsTrigger>
-                  <TabsTrigger value="Sketch" disabled={sketches.length === 0}>Sketch</TabsTrigger>
+                <TabsList className="flex w-full gap-2">
+                  {currentVersion?.ijewel_model_id && (
+                    <TabsTrigger value="CAD">3D Model</TabsTrigger>
+                  )}
+                  {(images.length + cads.length + renders.length) > 0 && (
+                    <TabsTrigger value="Images">CAD</TabsTrigger>
+                  )}
+                  {sketches.length > 0 && (
+                    <TabsTrigger value="Sketch">Sketch</TabsTrigger>
+                  )}
                 </TabsList>
               </Tabs>
             </div>
