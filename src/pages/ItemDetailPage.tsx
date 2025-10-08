@@ -36,6 +36,7 @@ interface VersionData {
   center_stone_info: string | null;
   version_quantity: number | null;
   fkb_items_and_versions: string;
+  ijewel_model_id?: string | null;
 }
 
 interface ReferenceFile {
@@ -368,6 +369,22 @@ const ItemDetailPage: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-8 items-start w-full">
           {/* Media Container */}
           <div className="w-full lg:w-[500px] flex-shrink-0 flex flex-col items-center">
+            {/* CAD Viewer (iframe) - show if ijewel_model_id exists */}
+            {currentVersion.ijewel_model_id && (
+              <div className="w-full mb-4 rounded-lg overflow-hidden border border-gray-200">
+                <iframe
+                  title="CAD Viewer"
+                  frameBorder={0}
+                  allowFullScreen
+                  mozallowfullscreen="true"
+                  webkitallowfullscreen="true"
+                  width="100%"
+                  height="360px"
+                  allow="autoplay; fullscreen; xr-spatial-tracking; web-share"
+                  src={`https://drive.ijewel3d.com/drive/files/${currentVersion.ijewel_model_id}/embedded`}
+                />
+              </div>
+            )}
             {/* Main media display */}
             <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4">
               {allMedia.length > 0 ? (
