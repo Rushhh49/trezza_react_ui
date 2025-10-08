@@ -428,9 +428,9 @@ const ItemDetailPage: React.FC = () => {
             <h1 className="text-3xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">
               {item.new_name}
             </h1>
-            <Badge variant="secondary" className="bg-gray-100 text-gray-800 border border-gray-200">
+            {/* <Badge variant="secondary" className="bg-gray-100 text-gray-800 border border-gray-200">
               Version {currentVersion.version_number}
-            </Badge>
+            </Badge> */}
           </div>
         </div>
 
