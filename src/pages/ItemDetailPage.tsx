@@ -314,7 +314,10 @@ const ItemDetailPage: React.FC = () => {
 
   if (loading) return (
     <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="text-xl text-gray-700">Loading...</div>
+      <div className="flex flex-col items-center gap-3">
+        <div className="h-8 w-8 rounded-full border-2 border-[#E6C2FF] border-t-[#4A3C72] animate-spin"></div>
+        <div className="text-sm tracking-wide uppercase text-[#837A75]">Curating your jewelry...</div>
+      </div>
     </div>
   );
   
