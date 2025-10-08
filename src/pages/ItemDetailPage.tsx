@@ -223,12 +223,11 @@ const ItemDetailPage: React.FC = () => {
           console.warn('Failed to fetch references:', err);
         }
         
-        // Fetch CAD files
+        // Fetch CAD files (list endpoint similar to references)
         try {
-          const cadsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions:get:${currentVersion.id}/cad_file`, {
+          const cadsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/cad_file:list`, {
             headers: getAuthHeaders()
           });
-          
           if (cadsResponse.ok) {
             const cadsData = await cadsResponse.json();
             setCads(Array.isArray(cadsData.data) ? cadsData.data : []);
@@ -236,13 +235,12 @@ const ItemDetailPage: React.FC = () => {
         } catch (err) {
           console.warn('Failed to fetch CAD files:', err);
         }
-        
-        // Fetch render files
+
+        // Fetch render files (list endpoint similar to references)
         try {
-          const rendersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions:get:${currentVersion.id}/render_file`, {
+          const rendersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/render_file:list`, {
             headers: getAuthHeaders()
           });
-          
           if (rendersResponse.ok) {
             const rendersData = await rendersResponse.json();
             setRenders(Array.isArray(rendersData.data) ? rendersData.data : []);
@@ -250,13 +248,12 @@ const ItemDetailPage: React.FC = () => {
         } catch (err) {
           console.warn('Failed to fetch render files:', err);
         }
-        
-        // Fetch sketch files
+
+        // Fetch sketch files (list endpoint similar to references)
         try {
-          const sketchesResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions:get:${currentVersion.id}/sketch_file`, {
+          const sketchesResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/sketch_file:list`, {
             headers: getAuthHeaders()
           });
-          
           if (sketchesResponse.ok) {
             const sketchesData = await sketchesResponse.json();
             setSketches(Array.isArray(sketchesData.data) ? sketchesData.data : []);
