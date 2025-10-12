@@ -30,34 +30,65 @@ const HomePage: React.FC = () => {
           <h1 className="text-4xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight mb-4">
             Welcome to YOUR CUSTOM JEWELRY
           </h1>
-          <p className="text-lg text-gray-500 max-w-md mx-auto">
-            Enter your purchase order number to view your jewelry items and specifications
+          <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+            Access your jewelry orders or manage your retail account
           </p>
         </div>
         
-        <Card className="p-8 bg-white border border-gray-200 shadow-lg max-w-md w-full">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="purchaseNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                Purchase Order Number
-              </label>
-              <input
-                id="purchaseNumber"
-                type="text"
-                placeholder="Enter your purchase order number"
-                value={purchaseNumber}
-                onChange={e => setPurchaseNumber(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-colors"
-              />
+        <div className="flex flex-col md:flex-row gap-6 w-full max-w-4xl">
+          {/* Retailer Login Card */}
+          <Card className="p-8 bg-white border border-gray-200 shadow-lg flex-1">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900 font-['Playfair_Display'] mb-2">
+                Retailer Portal
+              </h2>
+              <p className="text-gray-500">
+                Access your retail management dashboard
+              </p>
             </div>
-            <button 
-              type="submit" 
-              className="w-full bg-gray-900 text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg"
+            <a
+              href="https://admin.yourcustom.jewelry/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-gray-900 text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg text-center block"
             >
-              View Order
-            </button>
-          </form>
-        </Card>
+              Retailer Login
+            </a>
+          </Card>
+
+          {/* Purchase Order Card */}
+          <Card className="p-8 bg-white border border-gray-200 shadow-lg flex-1">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900 font-['Playfair_Display'] mb-2">
+                View Order
+              </h2>
+              <p className="text-gray-500">
+                Enter your purchase order number to view items
+              </p>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="purchaseNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                  Purchase Order Number
+                </label>
+                <input
+                  id="purchaseNumber"
+                  type="text"
+                  placeholder="Enter your purchase order number"
+                  value={purchaseNumber}
+                  onChange={e => setPurchaseNumber(e.target.value)}
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-colors"
+                />
+              </div>
+              <button 
+                type="submit" 
+                className="w-full bg-gray-900 text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg"
+              >
+                View Order
+              </button>
+            </form>
+          </Card>
+        </div>
       </div>
 
       {/* Footer */}
