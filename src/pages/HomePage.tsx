@@ -31,7 +31,7 @@ const HomePage: React.FC = () => {
             Welcome to YOUR CUSTOM JEWELRY
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            Access your jewelry orders or manage your retail account
+            Access your custom jewelry orders here!
           </p>
         </div>
         
