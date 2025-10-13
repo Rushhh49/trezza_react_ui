@@ -37,7 +37,7 @@ const HomePage: React.FC = () => {
         
         <div className="flex flex-col md:flex-row gap-6 w-full max-w-4xl">
           {/* Retailer Login Card */}
-          <Card className="p-8 bg-white border border-gray-200 shadow-lg flex-1">
+          <Card className="p-8 bg-white border border-gray-200 shadow-lg flex-1" style="align-content: center;">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-semibold text-gray-900 font-['Playfair_Display'] mb-2">
                 Retailer Portal
