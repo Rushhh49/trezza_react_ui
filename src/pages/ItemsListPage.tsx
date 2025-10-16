@@ -196,8 +196,8 @@ const ItemsListPage: React.FC = () => {
       {/* Header */}
       <header className="border-b border-gray-200 bg-white/70 backdrop-blur">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 font-['Playfair_Display']">YOUR CUSTOM JEWELRY</h1>
+          <div className="flex items-center">
+            <img src="/logo-yourcustomjewelry.png" alt="Your Custom Jewelry" className="h-8 md:h-10 w-auto" />
           </div>
           <nav className="flex items-center space-x-6"></nav>
         </div>

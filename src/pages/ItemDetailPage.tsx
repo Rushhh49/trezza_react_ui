@@ -266,6 +266,13 @@ const ItemDetailPage: React.FC = () => {
     
     const fetchVersionMedia = async () => {
       try {
+        // Clear previous version media immediately to avoid stale tab options
+        setImages([]);
+        setVideos([]);
+        setCads([]);
+        setRenders([]);
+        setSketches([]);
+        // Keep activeTab consistent; it will be corrected by availability effects below
         // Fetch references (images and videos) for selected item
         try {
           const refsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/references:list`, {
@@ -284,17 +291,21 @@ const ItemDetailPage: React.FC = () => {
           console.warn('Failed to fetch references:', err);
         }
         
-        // Fetch CAD files (list endpoint similar to references) for selected item
+        // Fetch CAD file via get endpoint (single current CAD for version)
         try {
-          const cadsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/cad_file:list`, {
+          const cadGetResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/cad_file:get`, {
             headers: getAuthHeaders()
           });
-          if (cadsResponse.ok) {
-            const cadsData = await cadsResponse.json();
-            setCads(Array.isArray(cadsData.data) ? cadsData.data : []);
+          if (cadGetResponse.ok) {
+            const cadData = await cadGetResponse.json();
+            const cadItem = cadData?.data;
+            setCads(cadItem ? [cadItem] : []);
+          } else {
+            setCads([]);
           }
         } catch (err) {
-          console.warn('Failed to fetch CAD files:', err);
+          console.warn('Failed to fetch CAD file via get:', err);
+          setCads([]);
         }
 
         // Fetch render files (list endpoint similar to references) for selected item
@@ -331,36 +342,29 @@ const ItemDetailPage: React.FC = () => {
     fetchVersionMedia();
   }, [currentVersion]);
 
-  // Choose default tab based on availability (CAD > Images > Sketch)
+  // Choose default tab based on availability (prefer CAD, then Sketch)
   useEffect(() => {
-    if (currentVersion?.ijewel_model_id) {
+    if (currentVersion?.ijewel_model_id || cads.length > 0) {
       setActiveTab('CAD');
-      return;
-    }
-    if ((images.length + cads.length + renders.length) > 0) {
-      setActiveTab('Images');
       return;
     }
     if (sketches.length > 0) {
       setActiveTab('Sketch');
       return;
     }
-    setActiveTab('Images');
-  }, [currentVersion?.ijewel_model_id, images.length, cads.length, renders.length, sketches.length]);
+    setActiveTab('CAD');
+  }, [currentVersion?.ijewel_model_id, cads.length, sketches.length]);
 
   // Ensure active tab remains valid when availability changes
   useEffect(() => {
-    const hasCadIframe = Boolean(currentVersion?.ijewel_model_id);
-    const hasImages = (images.length + cads.length + renders.length) > 0;
+    const hasCad = Boolean(currentVersion?.ijewel_model_id) || cads.length > 0;
     const hasSketch = sketches.length > 0;
-    if (activeTab === 'CAD' && !hasCadIframe) {
-      setActiveTab(hasImages ? 'Images' : hasSketch ? 'Sketch' : 'Images');
-    } else if (activeTab === 'Images' && !hasImages) {
-      setActiveTab(hasCadIframe ? 'CAD' : hasSketch ? 'Sketch' : 'Images');
+    if (activeTab === 'CAD' && !hasCad) {
+      setActiveTab(hasSketch ? 'Sketch' : 'CAD');
     } else if (activeTab === 'Sketch' && !hasSketch) {
-      setActiveTab(hasCadIframe ? 'CAD' : hasImages ? 'Images' : 'Images');
+      setActiveTab(hasCad ? 'CAD' : 'CAD');
     }
-  }, [activeTab, currentVersion?.ijewel_model_id, images.length, cads.length, renders.length, sketches.length]);
+  }, [activeTab, currentVersion?.ijewel_model_id, cads.length, sketches.length]);
 
   // Reset indices when switching tabs
   useEffect(() => {
@@ -395,11 +399,10 @@ const ItemDetailPage: React.FC = () => {
     </div>
   );
 
-  // Build media per active tab
+  // Build media arrays
+  // Show CAD in Images tab the same way as Sketch (simple <img>)
   const imageMedia = [
-    ...images.map(i => ({ ...i, type: 'image' as const })),
-    ...cads.map(c => ({ ...c, type: '3d' as const })),
-    ...renders.map(r => ({ ...r, type: '3d' as const })),
+    ...cads.map(c => ({ ...c, type: 'image' as const })),
   ];
   const sketchMedia = [
     ...sketches.map(s => ({ ...s, type: 'image' as const })),
@@ -411,8 +414,8 @@ const ItemDetailPage: React.FC = () => {
       {/* Header */}
       <header className="border-b border-gray-200 bg-white/70 backdrop-blur">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 font-['Playfair_Display']">YOUR CUSTOM JEWELRY</h1>
+          <div className="flex items-center">
+            <img src="/logo-yourcustomjewelry.png" alt="Your Custom Jewelry" className="h-8 md:h-10 w-auto" />
           </div>
           <nav className="flex items-center space-x-6"></nav>
         </div>
@@ -498,7 +501,7 @@ const ItemDetailPage: React.FC = () => {
                   {currentVersion?.ijewel_model_id && (
                     <TabsTrigger value="CAD">3D Model</TabsTrigger>
                   )}
-                  {(images.length + cads.length + renders.length) > 0 && (
+                  {cads.length > 0 && (
                     <TabsTrigger value="Images">CAD</TabsTrigger>
                   )}
                   {sketches.length > 0 && (
@@ -524,42 +527,16 @@ const ItemDetailPage: React.FC = () => {
                 />
               </div>
             )}
-            {/* Main media display */}
+            {/* Images/Sketch display: render as simple images */}
             {activeTab !== 'CAD' && (
               <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4">
                 {allMedia.length > 0 ? (
-                allMedia[mainImageIndex].type === 'video' ? (
-                  <video
-                    src={API_CONFIG.BASE_URL + allMedia[mainImageIndex].url}
-                    className="w-full h-full object-contain cursor-zoom-in"
-                    onClick={() => { setModalType('video'); setModalIndex(mainImageIndex); setModalOpen(true); }}
-                    controls
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                  />
-                ) : allMedia[mainImageIndex].type === '3d' ? (
-                  <div className="w-full h-full">
-                    <model-viewer
-                      src={API_CONFIG.BASE_URL + allMedia[mainImageIndex].url}
-                      alt={allMedia[mainImageIndex].title}
-                      environment-image="https://modelviewer.dev/shared-assets/environments/moon_1k.hdr"
-                      shadow-intensity="1"
-                      camera-controls
-                      touch-action="pan-y"
-                      style={{ width: '100%', height: '100%' }}
-                    ></model-viewer>
-                  </div>
-                ) : (
                   <img
                     src={API_CONFIG.BASE_URL + allMedia[mainImageIndex].url}
                     alt={allMedia[mainImageIndex].title}
                     className="w-full h-full object-contain cursor-zoom-in"
                     onClick={() => { setModalType('image'); setModalIndex(mainImageIndex); setModalOpen(true); }}
                   />
-                )
                 ) : (
                   <div className="text-[#837A75] text-center">
                     <Image className="w-16 h-16 mx-auto mb-2 text-[#837A75]" />
@@ -568,9 +545,10 @@ const ItemDetailPage: React.FC = () => {
                 )}
               </div>
             )}
+            
 
-            {/* Media carousel */}
-            {activeTab !== 'CAD' && allMedia.length > 1 && (
+            {/* Media carousel for Sketch */}
+            {activeTab === 'Sketch' && allMedia.length > 1 && (
               <Carousel className="w-full max-w-[400px]">
                 <CarouselContent>
                   {allMedia.map((media, index) => (
@@ -582,21 +560,11 @@ const ItemDetailPage: React.FC = () => {
                           }`}
                           onClick={() => setMainImageIndex(index)}
                         >
-                          {media.type === 'video' ? (
-                            <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                              <Play className="w-6 h-6 text-[#4A3C72]" />
-                            </div>
-                          ) : media.type === '3d' ? (
-                            <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                              <Rotate3D className="w-6 h-6 text-[#4A3C72]" />
-                            </div>
-                          ) : (
                             <img
                               src={API_CONFIG.BASE_URL + media.url}
                               alt={media.title}
                               className="w-full h-full object-cover"
                             />
-                          )}
                         </div>
                       </div>
                     </CarouselItem>
