@@ -111,7 +111,7 @@ const ItemsListPage: React.FC = () => {
             { order_id: { po_no: { $eq: String(purchaseNumber) } } }
           ]
         }));
-        const itemsUrl = `${API_CONFIG.BASE_URL}/api/items:list?pageSize=100&page=1&sort[]=-createdAt&sort[]=po_i_no&appends[]=order_id&filter=${itemsFilter}&fields[]=id&fields[]=item_name&fields[]=item_description&fields[]=Quantity&fields[]=po_i_no&fields[]=fkb_orders_to_items&fields[]=item_type&fields[]=order_id`;
+        const itemsUrl = `${API_CONFIG.BASE_URL}/api/items:list?pageSize=100&page=1&sort[]=-createdAt&sort[]=po_i_no&appends[]=order_id&filter=${itemsFilter}&fields[]=id&fields[]=item_name&fields[]=item_description&fields[]=Quantity&fields[]=po_i_no&fields[]=fkb_orders_to_items&&fields[]=order_id`;
         const itemsResponse = await fetch(itemsUrl, {
           headers: getAuthHeaders()
         });
