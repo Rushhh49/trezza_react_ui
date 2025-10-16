@@ -73,7 +73,7 @@ const ItemsListPage: React.FC = () => {
             { po_no: { $eq: String(purchaseNumber) } }
           ]
         }));
-        const ordersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders:list?pageSize=1&page=1&appends[]=associate&appends[]=retailer&filter=${orderFilter}`, {
+        const ordersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/orders:list?pageSize=1&page=1&appends[]=retailer&filter=${orderFilter}&fields[]=id&fields[]=po_no&fields[]=status&fields[]=retailer_id&fields[]=retailer`, {
           headers: getAuthHeaders()
         });
         
@@ -111,7 +111,7 @@ const ItemsListPage: React.FC = () => {
             { order_id: { po_no: { $eq: String(purchaseNumber) } } }
           ]
         }));
-        const itemsUrl = `${API_CONFIG.BASE_URL}/api/items:list?pageSize=100&page=1&sort[]=-createdAt&sort[]=po_i_no&appends[]=order_id.associate&appends[]=order_id.retailer&appends[]=order_id&filter=${itemsFilter}`;
+        const itemsUrl = `${API_CONFIG.BASE_URL}/api/items:list?pageSize=100&page=1&sort[]=-createdAt&sort[]=po_i_no&appends[]=order_id&filter=${itemsFilter}&fields[]=id&fields[]=item_name&fields[]=item_description&fields[]=Quantity&fields[]=po_i_no&fields[]=fkb_orders_to_items&fields[]=item_type&fields[]=order_id`;
         const itemsResponse = await fetch(itemsUrl, {
           headers: getAuthHeaders()
         });
@@ -137,7 +137,7 @@ const ItemsListPage: React.FC = () => {
             { v_i_fk: { order_id: { po_no: { $eq: String(purchaseNumber) } } } }
           ]
         }));
-        const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=200&page=1&sort[]=-updatedAt&sort[]=-fkb_items_and_versions&appends[]=v_i_fk.order_id&appends[]=v_i_fk.order_id.retailer&appends[]=v_i_fk&filter=${versionsFilter}`;
+        const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=200&page=1&sort[]=-updatedAt&sort[]=-fkb_items_and_versions&appends[]=v_i_fk&filter=${versionsFilter}&fields[]=id&fields[]=version_number&fields[]=version_name&fields[]=version_desc&fields[]=status&fields[]=v_i_fk`;
         const versionsResponse = await fetch(versionsUrl, { headers: getAuthHeaders() });
         if (versionsResponse.ok) {
           const versionsData = await versionsResponse.json();

@@ -178,7 +178,7 @@ const OrderPage: React.FC = () => {
     const headers = getAuthHeaders();
     
     // First fetch the order to get the PO number
-    fetch(`${API_BASE}/api/orders/${orderId}`, { headers })
+    fetch(`${API_BASE}/api/orders/${orderId}?fields[]=id&fields[]=po_no&fields[]=status&fields[]=description&fields[]=retailer_id&fields[]=retailer`, { headers })
       .then(res => {
         if (!res.ok) throw new Error("Order not found");
         return res.json();
@@ -258,10 +258,10 @@ const OrderPage: React.FC = () => {
         ]
       }));
       
-      const appends = ['order_id.associate', 'order_id.retailer', 'order_id'];
+      const appends = ['order_id'];
       const appendsParam = appends.map(append => `appends[]=${append}`).join('&');
       
-      const url = `${API_BASE}/api/items:list?pageSize=100&page=1&sort[]=-createdAt&sort[]=po_i_no&${appendsParam}&filter=${filter}`;
+      const url = `${API_BASE}/api/items:list?pageSize=100&page=1&sort[]=-createdAt&sort[]=po_i_no&${appendsParam}&filter=${filter}&fields[]=id&fields[]=item_name&fields[]=item_description&fields[]=po_i_no&fields[]=Purchase_Item_Number&fields[]=Quantity&fields[]=fkb_orders_to_items&fields[]=emr_number&fields[]=order_id`;
       console.log('Fetching items with exact filter structure:', url);
       
       const response = await fetch(url, { headers });
@@ -294,7 +294,7 @@ const OrderPage: React.FC = () => {
         ]
       }));
 
-      const url = `${API_BASE}/api/versions:list?pageSize=200&page=1&sort[]=-updatedAt&sort[]=-fkb_items_and_versions&appends[]=v_i_fk.order_id&appends[]=v_i_fk.order_id.retailer&appends[]=v_i_fk&filter=${filter}`;
+      const url = `${API_BASE}/api/versions:list?pageSize=200&page=1&sort[]=-updatedAt&sort[]=-fkb_items_and_versions&appends[]=v_i_fk&filter=${filter}&fields[]=id&fields[]=version_name&fields[]=version_desc&fields[]=status&fields[]=f_s201x17a2bx&fields[]=v_i_fk`;
       console.log('Fetching versions using order-level relation:', url);
       
       const response = await fetch(url, { headers });

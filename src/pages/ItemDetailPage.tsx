@@ -130,7 +130,7 @@ const ItemDetailPage: React.FC = () => {
       try {
         const headers = getAuthHeaders();
         const filter = encodeURIComponent(JSON.stringify({ "$and": [ { po_no: { $eq: String(poNumber) } } ] }));
-        const url = `${API_CONFIG.BASE_URL}/api/orders:list?pageSize=10&sort[]=-createdAt&appends[]=associate&appends[]=retailer&page=1&filter=${filter}`;
+        const url = `${API_CONFIG.BASE_URL}/api/orders:list?pageSize=1&page=1&appends[]=retailer&filter=${filter}&fields[]=id&fields[]=po_no&fields[]=retailer_id&fields[]=retailer`;
         const res = await fetch(url, { headers });
         if (!res.ok) {
           console.error('Retailer fetch failed:', res.status, res.statusText);
@@ -171,7 +171,7 @@ const ItemDetailPage: React.FC = () => {
               { order_id: { po_no: { $eq: String(purchaseNumber) } } }
             ]
           }));
-          const itemsUrl = `${API_CONFIG.BASE_URL}/api/items:list?pageSize=100&page=1&sort[]=createdAt&appends[]=order_id&filter=${itemsFilter}`;
+          const itemsUrl = `${API_CONFIG.BASE_URL}/api/items:list?pageSize=50&page=1&sort[]=createdAt&appends[]=order_id&filter=${itemsFilter}&fields[]=id&fields[]=item_name&fields[]=new_name&fields[]=item_description&fields[]=Quantity&fields[]=po_i_no&fields[]=fkb_orders_to_items&fields[]=item_type&fields[]=order_id`;
           const res = await fetch(itemsUrl, { headers: getAuthHeaders() });
           if (!res.ok) throw new Error('Failed to fetch items for order');
           const data = await res.json();
