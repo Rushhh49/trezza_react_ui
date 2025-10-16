@@ -19,10 +19,12 @@ import LoadingScreen from '@/components/ui/loading-screen';
 interface ItemData {
   id: number;
   item_name: string;
+  new_name: string;
   item_description: string;
   Quantity: number | null;
   po_i_no: string;
   fkb_orders_to_items: string;
+  item_type?: string;
 }
 
 interface VersionData {
@@ -31,7 +33,7 @@ interface VersionData {
   version_name: string;
   item_size: string | null;
   item_description: string | null;
-  metal_type: string | null;
+  metal_type1: string | null;
   metal_color: string | null;
   stamp_engraving: string | null;
   melee_stones_info: string | null;
@@ -88,9 +90,11 @@ function useModelViewerScript() {
 const ItemDetailPage: React.FC = () => {
   useModelViewerScript();
   const { itemId } = useParams<{ itemId: string }>();
+  const { purchaseNumber } = useParams<{ purchaseNumber: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const [item, setItem] = useState<ItemData | null>(null);
+  const [itemsInOrder, setItemsInOrder] = useState<ItemData[]>([]);
   const [versions, setVersions] = useState<VersionData[]>([]);
   const [currentVersion, setCurrentVersion] = useState<VersionData | null>(null);
   const [images, setImages] = useState<ReferenceFile[]>([]);
@@ -105,7 +109,7 @@ const ItemDetailPage: React.FC = () => {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [mainVideoIndex, setMainVideoIndex] = useState(0);
   const [main3dIndex, setMain3dIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<'CAD' | 'Video' | 'Images' | 'Sketch'>('Images');
+  const [activeTab, setActiveTab] = useState<'CAD' | 'Images' | 'Sketch'>('Images');
   
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -113,6 +117,36 @@ const ItemDetailPage: React.FC = () => {
   const [modalIndex, setModalIndex] = useState(0);
 
   useEffect(() => {
+    // If navigated via PO number route, fetch items for that order
+    if (purchaseNumber) {
+      const fetchItemsForOrder = async () => {
+        setLoading(true);
+        setError("");
+        try {
+          const itemsFilter = encodeURIComponent(JSON.stringify({
+            $and: [
+              { order_id: { po_no: { $eq: String(purchaseNumber) } } }
+            ]
+          }));
+          const itemsUrl = `${API_CONFIG.BASE_URL}/api/items:list?pageSize=100&page=1&sort[]=createdAt&appends[]=order_id&filter=${itemsFilter}`;
+          const res = await fetch(itemsUrl, { headers: getAuthHeaders() });
+          if (!res.ok) throw new Error('Failed to fetch items for order');
+          const data = await res.json();
+          const orderItems: ItemData[] = Array.isArray(data.data) ? data.data : [];
+          // Sort by creation ascending (already sorted), set state
+          setItemsInOrder(orderItems);
+          if (orderItems.length > 0) {
+            setItem(orderItems[0]);
+          }
+        } catch (e: any) {
+          setError(e.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchItemsForOrder();
+      return;
+    }
     if (!itemId) return;
     
     // Log the navigation state for debugging
@@ -133,7 +167,7 @@ const ItemDetailPage: React.FC = () => {
         }
         
         // Use versions data from navigation state if available
-        if (navigationState?.versions && navigationState.versions.length > 0) {
+        if (!purchaseNumber && navigationState?.versions && navigationState.versions.length > 0) {
           console.log('Using versions from navigation state:', navigationState.versions);
           // Sort by version number (highest first)
           const sortedVersions = [...navigationState.versions].sort((a: any, b: any) => b.version_number - a.version_number);
@@ -142,7 +176,7 @@ const ItemDetailPage: React.FC = () => {
         }
         
         // Only fetch item details from API if none were passed from navigation state
-        if (!navigationState?.itemData) {
+        if (!purchaseNumber && !navigationState?.itemData) {
           console.log('No item data from navigation state, fetching from API...');
           const itemResponse = await fetch(`${API_CONFIG.BASE_URL}/api/items:get:${itemId}`, {
             headers: getAuthHeaders()
@@ -160,33 +194,32 @@ const ItemDetailPage: React.FC = () => {
         }
         
         // Only fetch versions from API if none were passed from navigation state
-        if (!navigationState?.versions || navigationState.versions.length === 0) {
-          console.log('No versions from navigation state, fetching from API...');
-          // Fetch versions only for this item using JSON filter and appends
-          const versionsFilter = encodeURIComponent(JSON.stringify({
-            $and: [
-              { f_s201x17a2bx: { po_i_no: { $eq: (navigationState?.itemData?.po_i_no || itemId) } } }
-            ]
-          }));
-          const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=100&page=1&appends[]=references&appends[]=f_s201x17a2bx&filter=${versionsFilter}`;
-          const versionsResponse = await fetch(versionsUrl, { headers: getAuthHeaders() });
-          
-          if (!versionsResponse.ok) {
-            const errorText = await versionsResponse.text();
-            console.error('Versions API response:', versionsResponse.status, versionsResponse.statusText);
-            console.error('Error response body:', errorText);
-            throw new Error(`Failed to fetch versions: ${versionsResponse.status} ${versionsResponse.statusText}`);
-          }
-          
-          const versionsData = await versionsResponse.json();
-          const itemVersions = Array.isArray(versionsData.data) ? versionsData.data : [];
-          
-          // Sort by version number (highest first)
-          itemVersions.sort((a: any, b: any) => b.version_number - a.version_number);
-          setVersions(itemVersions);
-          
-          if (itemVersions.length > 0) {
-            setCurrentVersion(itemVersions[0]); // Set to latest version
+        if (!purchaseNumber && (!navigationState?.versions || navigationState.versions.length === 0)) {
+          // Only fetch versions here if we have item's po_i_no from navigation state.
+          // Otherwise, we'll fetch versions in the separate effect once item is loaded.
+          const po_i_no = navigationState?.itemData?.po_i_no;
+          if (po_i_no) {
+            console.log('Fetching versions from API using navigation item po_i_no...');
+            const versionsFilter = encodeURIComponent(JSON.stringify({
+              $and: [
+                { v_i_fk: { po_i_no: { $eq: po_i_no } } }
+              ]
+            }));
+            const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=100&page=1&sort[]=-updatedAt&appends[]=v_i_fk&filter=${versionsFilter}`;
+            const versionsResponse = await fetch(versionsUrl, { headers: getAuthHeaders() });
+            if (!versionsResponse.ok) {
+              const errorText = await versionsResponse.text();
+              console.error('Versions API response:', versionsResponse.status, versionsResponse.statusText);
+              console.error('Error response body:', errorText);
+              throw new Error(`Failed to fetch versions: ${versionsResponse.status} ${versionsResponse.statusText}`);
+            }
+            const versionsData = await versionsResponse.json();
+            const itemVersions = Array.isArray(versionsData.data) ? versionsData.data : [];
+            itemVersions.sort((a: any, b: any) => b.version_number - a.version_number);
+            setVersions(itemVersions);
+            if (itemVersions.length > 0) {
+              setCurrentVersion(itemVersions[0]);
+            }
           }
         }
         
@@ -201,11 +234,39 @@ const ItemDetailPage: React.FC = () => {
   }, [itemId, location.state]);
 
   useEffect(() => {
+    if (!item) return;
+    // When item changes (including via PO toggle), refetch versions for that item
+    const fetchVersionsForItem = async () => {
+      setLoading(true);
+      try {
+        const versionsFilter = encodeURIComponent(JSON.stringify({
+          $and: [
+            { v_i_fk: { po_i_no: { $eq: item.po_i_no } } }
+          ]
+        }));
+        const versionsUrl = `${API_CONFIG.BASE_URL}/api/versions:list?pageSize=100&page=1&sort[]=-updatedAt&appends[]=v_i_fk&filter=${versionsFilter}`;
+        const versionsResponse = await fetch(versionsUrl, { headers: getAuthHeaders() });
+        if (versionsResponse.ok) {
+          const versionsData = await versionsResponse.json();
+          const itemVersions = Array.isArray(versionsData.data) ? versionsData.data : [];
+          itemVersions.sort((a: any, b: any) => b.version_number - a.version_number);
+          setVersions(itemVersions);
+          setCurrentVersion(itemVersions[0] || null);
+        }
+      } catch (e) {
+        console.warn('Failed to fetch versions for item:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchVersionsForItem();
+  }, [item]);
+  useEffect(() => {
     if (!currentVersion) return;
     
     const fetchVersionMedia = async () => {
       try {
-        // Fetch references (images and videos)
+        // Fetch references (images and videos) for selected item
         try {
           const refsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/references:list`, {
             headers: getAuthHeaders()
@@ -223,7 +284,7 @@ const ItemDetailPage: React.FC = () => {
           console.warn('Failed to fetch references:', err);
         }
         
-        // Fetch CAD files (list endpoint similar to references)
+        // Fetch CAD files (list endpoint similar to references) for selected item
         try {
           const cadsResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/cad_file:list`, {
             headers: getAuthHeaders()
@@ -236,7 +297,7 @@ const ItemDetailPage: React.FC = () => {
           console.warn('Failed to fetch CAD files:', err);
         }
 
-        // Fetch render files (list endpoint similar to references)
+        // Fetch render files (list endpoint similar to references) for selected item
         try {
           const rendersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/render_file:list`, {
             headers: getAuthHeaders()
@@ -249,7 +310,7 @@ const ItemDetailPage: React.FC = () => {
           console.warn('Failed to fetch render files:', err);
         }
 
-        // Fetch sketch files (list endpoint similar to references)
+        // Fetch sketch files (list endpoint similar to references) for selected item
         try {
           const sketchesResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/sketch_file:list`, {
             headers: getAuthHeaders()
@@ -270,14 +331,10 @@ const ItemDetailPage: React.FC = () => {
     fetchVersionMedia();
   }, [currentVersion]);
 
-  // Choose default tab based on availability (CAD > Video > Images > Sketch)
+  // Choose default tab based on availability (CAD > Images > Sketch)
   useEffect(() => {
     if (currentVersion?.ijewel_model_id) {
       setActiveTab('CAD');
-      return;
-    }
-    if (videos.length > 0) {
-      setActiveTab('Video');
       return;
     }
     if ((images.length + cads.length + renders.length) > 0) {
@@ -289,7 +346,21 @@ const ItemDetailPage: React.FC = () => {
       return;
     }
     setActiveTab('Images');
-  }, [currentVersion?.ijewel_model_id, videos.length, images.length, cads.length, renders.length, sketches.length]);
+  }, [currentVersion?.ijewel_model_id, images.length, cads.length, renders.length, sketches.length]);
+
+  // Ensure active tab remains valid when availability changes
+  useEffect(() => {
+    const hasCadIframe = Boolean(currentVersion?.ijewel_model_id);
+    const hasImages = (images.length + cads.length + renders.length) > 0;
+    const hasSketch = sketches.length > 0;
+    if (activeTab === 'CAD' && !hasCadIframe) {
+      setActiveTab(hasImages ? 'Images' : hasSketch ? 'Sketch' : 'Images');
+    } else if (activeTab === 'Images' && !hasImages) {
+      setActiveTab(hasCadIframe ? 'CAD' : hasSketch ? 'Sketch' : 'Images');
+    } else if (activeTab === 'Sketch' && !hasSketch) {
+      setActiveTab(hasCadIframe ? 'CAD' : hasImages ? 'Images' : 'Images');
+    }
+  }, [activeTab, currentVersion?.ijewel_model_id, images.length, cads.length, renders.length, sketches.length]);
 
   // Reset indices when switching tabs
   useEffect(() => {
@@ -325,9 +396,6 @@ const ItemDetailPage: React.FC = () => {
   );
 
   // Build media per active tab
-  const videoMedia = [
-    ...videos.map(v => ({ ...v, type: 'video' as const })),
-  ];
   const imageMedia = [
     ...images.map(i => ({ ...i, type: 'image' as const })),
     ...cads.map(c => ({ ...c, type: '3d' as const })),
@@ -336,8 +404,7 @@ const ItemDetailPage: React.FC = () => {
   const sketchMedia = [
     ...sketches.map(s => ({ ...s, type: 'image' as const })),
   ];
-
-  const allMedia = activeTab === 'Video' ? videoMedia : activeTab === 'Sketch' ? sketchMedia : imageMedia;
+  const allMedia = activeTab === 'Sketch' ? sketchMedia : imageMedia;
 
   return (
     <div className="min-h-screen bg-white font-['Inter'] flex flex-col">
@@ -345,7 +412,7 @@ const ItemDetailPage: React.FC = () => {
       <header className="border-b border-gray-200 bg-white/70 backdrop-blur">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 font-['Playfair_Display']">BYONDJEWELRY</h1>
+            <h1 className="text-xl md:text-2xl font-semibold tracking-tight text-gray-900 font-['Playfair_Display']">YOUR CUSTOM JEWELRY</h1>
           </div>
           <nav className="flex items-center space-x-6"></nav>
         </div>
@@ -354,24 +421,49 @@ const ItemDetailPage: React.FC = () => {
       <div className="flex-1 max-w-7xl mx-auto px-6 py-10">
         {/* Back Button and Header */}
         <div className="mb-6">
-          <Button 
+          {/* <Button 
             variant="ghost" 
             onClick={goBack}
             className="mb-4 text-gray-700 hover:bg-gray-100"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Items
-          </Button>
+          </Button> */}
           
-          <div className="flex items-center gap-4 mb-4">
+          <div className="mb-4">
+            <div className="text-sm text-gray-500 mb-1">Purchase Order: {item.fkb_orders_to_items}</div>
             <h1 className="text-3xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">
-              {item.item_name}
+              {item.new_name}
             </h1>
-            <Badge variant="secondary" className="bg-gray-100 text-gray-800 border border-gray-200">
-              Version {currentVersion.version_number}
-            </Badge>
           </div>
         </div>
+
+        {/* Item Toggle (if navigated via PO) */}
+        {purchaseNumber && itemsInOrder.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Item</h3>
+            <div className="flex gap-2 flex-wrap">
+              {itemsInOrder.map((itm, idx) => (
+                <Button
+                  key={itm.id}
+                  variant={item?.id === itm.id ? "default" : "outline"}
+                  onClick={() => {
+                    setItem(itm);
+                    setVersions([]);
+                    setCurrentVersion(null);
+                  }}
+                  className={item?.id === itm.id ? 
+                    "bg-gray-900 text-white" : 
+                    "border-gray-300 text-gray-700 hover:bg-gray-100"
+                  }
+                >
+                  {/* {`Item ${idx + 1}`} */}
+                  {itm.new_name}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Version Selector */}
         {versions.length > 1 && (
@@ -381,9 +473,9 @@ const ItemDetailPage: React.FC = () => {
               {versions.map((version) => (
                 <Button
                   key={version.id}
-                  variant={currentVersion.id === version.id ? "default" : "outline"}
+                  variant={currentVersion && currentVersion.id === version.id ? "default" : "outline"}
                   onClick={() => handleVersionChange(version)}
-                  className={currentVersion.id === version.id ? 
+                  className={currentVersion && currentVersion.id === version.id ? 
                     "bg-gray-900 text-white" : 
                     "border-gray-300 text-gray-700 hover:bg-gray-100"
                   }
@@ -402,11 +494,16 @@ const ItemDetailPage: React.FC = () => {
             {/* Media Tabs */}
             <div className="w-full mb-4">
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="CAD" disabled={!currentVersion.ijewel_model_id}>CAD</TabsTrigger>
-                  <TabsTrigger value="Video" disabled={videos.length === 0}>Video</TabsTrigger>
-                  <TabsTrigger value="Images" disabled={(images.length + cads.length + renders.length) === 0}>Images</TabsTrigger>
-                  <TabsTrigger value="Sketch" disabled={sketches.length === 0}>Sketch</TabsTrigger>
+                <TabsList className="flex w-full gap-2">
+                  {currentVersion?.ijewel_model_id && (
+                    <TabsTrigger value="CAD">3D Model</TabsTrigger>
+                  )}
+                  {(images.length + cads.length + renders.length) > 0 && (
+                    <TabsTrigger value="Images">CAD</TabsTrigger>
+                  )}
+                  {sketches.length > 0 && (
+                    <TabsTrigger value="Sketch">Sketch</TabsTrigger>
+                  )}
                 </TabsList>
               </Tabs>
             </div>
@@ -511,47 +608,15 @@ const ItemDetailPage: React.FC = () => {
             )}
           </div>
 
-          {/* Details and Specifications */}
+          {/* Details */}
           <div className="flex-1 w-full max-w-2xl mx-auto lg:mx-0">
-            {/* Version Information */}
             <Card className="p-6 bg-white border border-gray-200 shadow-sm mb-6">
-              <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">
-                Version Details
-              </h3>
+              <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* <div>
-                  <div className="text-lg text-gray-500 font-semibold">Version Name</div>
-                  <div className="text-sm text-gray-900 font-medium">{currentVersion.version_name}</div>
-                </div> */}
-                <div>
-                  <div className="text-lg text-gray-500 font-semibold">Version Number</div>
-                  <div className="text-sm text-gray-900 font-medium">{currentVersion.version_number}</div>
-                </div>
                 {currentVersion.item_size && (
                   <div>
-                    <div className="text-lg text-gray-500 font-semibold">Size</div>
+                    <div className="text-lg text-gray-500 font-semibold">Item Size</div>
                     <div className="text-sm text-gray-900 font-medium">{currentVersion.item_size}</div>
-                  </div>
-                )}
-                {currentVersion.version_quantity && (
-                  <div>
-                    <div className="text-lg text-gray-500 font-semibold">Quantity</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.version_quantity}</div>
-                  </div>
-                )}
-              </div>
-            </Card>
-
-            {/* Technical Specifications */}
-            <Card className="p-6 bg-white border border-gray-200 shadow-sm mb-6">
-              <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">
-                Technical Specifications
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {currentVersion.metal_type && (
-                  <div>
-                    <div className="text-lg text-gray-500 font-semibold">Metal Type</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.metal_type}</div>
                   </div>
                 )}
                 {currentVersion.metal_color && (
@@ -560,43 +625,12 @@ const ItemDetailPage: React.FC = () => {
                     <div className="text-sm text-gray-900 font-medium">{currentVersion.metal_color}</div>
                   </div>
                 )}
-                {currentVersion.center_stone_info && (
+                {currentVersion.metal_type1 && (
                   <div>
-                    <div className="text-lg text-gray-500 font-semibold">Center Stone</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.center_stone_info}</div>
+                    <div className="text-lg text-gray-500 font-semibold">Metal Type</div>
+                    <div className="text-sm text-gray-900 font-medium">{currentVersion.metal_type1}</div>
                   </div>
                 )}
-                {currentVersion.melee_stones_info && (
-                  <div>
-                    <div className="text-lg text-gray-500 font-semibold">Melee Stones</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.melee_stones_info}</div>
-                  </div>
-                )}
-                {currentVersion.stamp_engraving && (
-                  <div>
-                    <div className="text-lg text-gray-500 font-semibold">Stamp/Engraving</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.stamp_engraving}</div>
-                  </div>
-                )}
-                {currentVersion.item_description && (
-                  <div className="md:col-span-2">
-                    <div className="text-lg text-gray-500 font-semibold">Version Description</div>
-                    <div className="text-sm text-gray-900 font-medium">{currentVersion.item_description}</div>
-                  </div>
-                )}
-              </div>
-            </Card>
-
-            {/* Item Information */}
-            <Card className="p-6 bg-white border border-gray-200 shadow-sm">
-              <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">
-                Item Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <div className="text-lg text-gray-500 font-semibold">Purchase Order</div>
-                  <div className="text-sm text-gray-900 font-medium">{item.fkb_orders_to_items}</div>
-                </div>
               </div>
             </Card>
           </div>
@@ -606,7 +640,7 @@ const ItemDetailPage: React.FC = () => {
       {/* Footer */}
       <footer className="border-t border-gray-200 py-4 mt-auto bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center text-gray-500 text-sm">© 2024 BYONDJEWELRY. All rights reserved.</div>
+          <div className="text-center text-gray-500 text-sm">© 2024 YOUR CUSTOM JEWELRY. All rights reserved.</div>
         </div>
       </footer>
 
