@@ -51,6 +51,8 @@ interface OrderData {
     email: string;
     phone: string;
     name_plus_id: string;
+    logo_url?: string;
+    retailer_logo?: string;
   };
   associate?: {
     id: number;
@@ -69,6 +71,8 @@ interface RetailerData {
   email: string;
   phone: string;
   name_plus_id: string;
+  logo_url?: string;
+  retailer_logo?: string;
 }
 
 interface JewelryVariation {
@@ -383,6 +387,24 @@ const OrderPage: React.FC = () => {
       </header>
 
       <div className="flex-1 max-w-7xl mx-auto px-6 py-10">
+        {/* Retailer Branding (logo above name, centered) */}
+        <div className="mb-6 flex flex-col items-center text-center">
+          {retailer && (
+            <>
+              {(retailer.logo_url || (retailer as any).logo || (retailer as any).retailer_logo) ? (
+                <img
+                  src={(retailer.logo_url as string) || ((retailer as any).logo as string) || ((retailer as any).retailer_logo as string)}
+                  alt={retailer.retailer_name || retailer.name_plus_id || 'Retailer Logo'}
+                  className="h-16 w-auto object-contain mb-2"
+                />
+              ) : null}
+              <div className="text-lg font-semibold text-gray-900">
+                {retailer.name_plus_id || retailer.retailer_name || 'Retailer'}
+              </div>
+            </>
+          )}
+        </div>
+
         {/* Order ID and Status */}
         <div className="mb-6 flex items-center gap-4">
           <h2 className="text-2xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">Order ID {orderId}</h2>
