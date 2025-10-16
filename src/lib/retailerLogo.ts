@@ -12,7 +12,7 @@ export async function fetchUserIdByRetailerId(retailerId: number): Promise<numbe
       ]
     }));
 
-    const url = `${API_CONFIG.BASE_URL}/api/users:list?pageSize=20&sort[]=-updatedAt&appends[]=createdBy&page=1&filter=${filter}`;
+    const url = `${API_CONFIG.BASE_URL}/api/users:list?pageSize=20&sort[]=-updatedAt&appends[]=retailer_logo&page=1&filter=${filter}`;
     const res = await fetch(url, { headers: getAuthHeaders() });
     if (!res.ok) return null;
     const json = await res.json();
@@ -29,7 +29,7 @@ export async function fetchUserIdByRetailerId(retailerId: number): Promise<numbe
  */
 export async function fetchRetailerLogoUrlByUserId(userId: number): Promise<string | null> {
   try {
-    const url = `${API_CONFIG.BASE_URL}/api/users:get?filterByTk=${encodeURIComponent(String(userId))}&appends[]=createdBy`;
+    const url = `${API_CONFIG.BASE_URL}/api/users:get?filterByTk=${encodeURIComponent(String(userId))}&appends[]=retailer_logo`;
     const res = await fetch(url, { headers: getAuthHeaders() });
     if (!res.ok) return null;
     const json = await res.json();
