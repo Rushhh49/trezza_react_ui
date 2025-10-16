@@ -116,6 +116,57 @@ const ItemDetailPage: React.FC = () => {
   const [modalType, setModalType] = useState<'image' | 'video' | '3d' | null>(null);
   const [modalIndex, setModalIndex] = useState(0);
 
+  // New: retailer info and logo
+  const [retailerInfo, setRetailerInfo] = useState<any | null>(null);
+  const [retailerLogoUrl, setRetailerLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    // If we have a PO number, fetch the order to get retailer info
+    const poNumber = purchaseNumber || item?.fkb_orders_to_items;
+    if (!poNumber) return;
+
+    const fetchRetailerFromOrder = async () => {
+      try {
+        const headers = getAuthHeaders();
+        const filter = encodeURIComponent(JSON.stringify({ "$and": [ { po_no: { $eq: String(poNumber) } } ] }));
+        const url = `${API_CONFIG.BASE_URL}/api/orders:list?pageSize=10&sort[]=-createdAt&appends[]=associate&appends[]=retailer&page=1&filter=${filter}`;
+        const res = await fetch(url, { headers });
+        if (!res.ok) {
+          console.error('Retailer fetch failed:', res.status, res.statusText);
+          return;
+        }
+        const data = await res.json();
+        const orderRow = Array.isArray(data.data) ? data.data[0] : null;
+        const retailer = orderRow?.retailer || null;
+        setRetailerInfo(retailer);
+        console.log('Retailer from orders:list:', retailer);
+
+        // Attempt to fetch retailer logo via specified endpoint
+        if (retailer?.id) {
+          const ep = `${API_CONFIG.BASE_URL}/api/retailers/${retailer.id}/retailer_logo:get`;
+          try {
+            const resp = await fetch(ep, { headers });
+            if (resp.ok) {
+              const body = await resp.json();
+              const fileObj = body?.data || null;
+              const fileUrl = fileObj?.url || fileObj?.preview || null;
+              if (fileUrl) {
+                setRetailerLogoUrl(fileUrl.startsWith('http') ? fileUrl : `${API_CONFIG.BASE_URL}${fileUrl}`);
+                console.log('Retailer logo URL:', fileUrl);
+              }
+            }
+          } catch (e) {
+            console.warn('Logo fetch failed for retailer_logo:get', e);
+          }
+        }
+      } catch (e) {
+        console.error('Error fetching retailer via PO:', e);
+      }
+    };
+
+    fetchRetailerFromOrder();
+  }, [purchaseNumber, item?.fkb_orders_to_items]);
+
   useEffect(() => {
     // If navigated via PO number route, fetch items for that order
     if (purchaseNumber) {
@@ -422,6 +473,21 @@ const ItemDetailPage: React.FC = () => {
       </header>
 
       <div className="flex-1 max-w-7xl mx-auto px-6 py-10">
+        {/* Retailer Branding (centered at top) */}
+        {(retailerInfo || retailerLogoUrl) && (
+          <div className="mb-6 flex flex-col items-center text-center">
+            {retailerLogoUrl && (
+              <img
+                src={retailerLogoUrl}
+                alt={retailerInfo?.company || 'Retailer Logo'}
+                className="h-16 w-auto object-contain mb-2"
+              />
+            )}
+            <div className="text-lg font-semibold text-gray-900">
+              {retailerInfo?.company || ''}
+            </div>
+          </div>
+        )}
         {/* Back Button and Header */}
         <div className="mb-6">
           {/* <Button 
