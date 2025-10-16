@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/carousel';
 import { X } from 'lucide-react';
 import { API_CONFIG, getAuthHeaders } from '@/config/api';
+import { fetchRetailerLogoUrl } from '@/lib/retailerLogo';
 
 interface OrderData {
   customerName?: string;
@@ -153,6 +154,7 @@ const OrderPage: React.FC = () => {
   const [items, setItems] = useState<ItemData[]>([]);
   const [versions, setVersions] = useState<VersionData[]>([]);
   const [retailer, setRetailer] = useState<RetailerData | null>(null);
+  const [retailerLogoUrl, setRetailerLogoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedVariation, setSelectedVariation] = useState<string>('');
@@ -194,6 +196,12 @@ const OrderPage: React.FC = () => {
           console.log('Retailer info from order:', orderData.retailer);
         } else {
           console.log('No retailer field found in order data');
+        }
+        // Fetch retailer logo via users endpoints using retailer_id from order
+        if (orderData.retailer_id) {
+          fetchRetailerLogoUrl(orderData.retailer_id)
+            .then((url) => setRetailerLogoUrl(url))
+            .catch(() => setRetailerLogoUrl(null));
         }
         
         return orderData;
@@ -391,9 +399,9 @@ const OrderPage: React.FC = () => {
         <div className="mb-6 flex flex-col items-center text-center">
           {retailer && (
             <>
-              {(retailer.logo_url || (retailer as any).logo || (retailer as any).retailer_logo) ? (
+              {(retailerLogoUrl || retailer.logo_url || (retailer as any).logo || (retailer as any).retailer_logo) ? (
                 <img
-                  src={(retailer.logo_url as string) || ((retailer as any).logo as string) || ((retailer as any).retailer_logo as string)}
+                  src={(retailerLogoUrl as string) || (retailer.logo_url as string) || ((retailer as any).logo as string) || ((retailer as any).retailer_logo as string)}
                   alt={retailer.retailer_name || retailer.name_plus_id || 'Retailer Logo'}
                   className="h-16 w-auto object-contain mb-2"
                 />
