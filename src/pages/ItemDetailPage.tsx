@@ -14,6 +14,7 @@ import {
 import { X } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { API_CONFIG, getAuthHeaders } from '@/config/api';
+import { fetchRetailerLogoUrl } from '@/lib/retailerLogo';
 import LoadingScreen from '@/components/ui/loading-screen';
 
 interface ItemData {
@@ -140,23 +141,14 @@ const ItemDetailPage: React.FC = () => {
         const retailer = orderRow?.retailer || null;
         setRetailerInfo(retailer);
         console.log('Retailer from orders:list:', retailer);
-
-        // Attempt to fetch retailer logo via specified endpoint
-        if (retailer?.id) {
-          const ep = `${API_CONFIG.BASE_URL}/api/retailers/${retailer.id}/retailer_logo:get`;
+        // Fetch retailer logo via users endpoints using retailer_id
+        const retailerId = orderRow?.retailer_id ?? retailer?.retailer_id;
+        if (retailerId) {
           try {
-            const resp = await fetch(ep, { headers });
-            if (resp.ok) {
-              const body = await resp.json();
-              const fileObj = body?.data || null;
-              const fileUrl = fileObj?.url || fileObj?.preview || null;
-              if (fileUrl) {
-                setRetailerLogoUrl(fileUrl.startsWith('http') ? fileUrl : `${API_CONFIG.BASE_URL}${fileUrl}`);
-                console.log('Retailer logo URL:', fileUrl);
-              }
-            }
+            const url = await fetchRetailerLogoUrl(retailerId);
+            if (url) setRetailerLogoUrl(url);
           } catch (e) {
-            console.warn('Logo fetch failed for retailer_logo:get', e);
+            console.warn('fetchRetailerLogoUrl failed', e);
           }
         }
       } catch (e) {
@@ -466,7 +458,9 @@ const ItemDetailPage: React.FC = () => {
       <header className="border-b border-gray-200 bg-white/70 backdrop-blur">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center">
-            <img src="/logo-yourcustomjewelry.png" alt="Your Custom Jewelry" className="h-8 md:h-10 w-auto" />
+            <button onClick={() => navigate('/')} aria-label="Go to Home">
+              <img src="/logo-yourcustomjewelry.png" alt="Your Custom Jewelry" className="h-8 md:h-10 w-auto" />
+            </button>
           </div>
           <nav className="flex items-center space-x-6"></nav>
         </div>

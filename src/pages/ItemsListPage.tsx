@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Package, Eye, User } from 'lucide-react';
 import { API_CONFIG, getAuthHeaders } from '@/config/api';
+import { fetchRetailerLogoUrl } from '@/lib/retailerLogo';
 import LoadingScreen from '@/components/ui/loading-screen';
 
 interface OrderData {
@@ -52,6 +53,7 @@ const ItemsListPage: React.FC = () => {
   const [order, setOrder] = useState<OrderData | null>(null);
   const [items, setItems] = useState<ItemData[]>([]);
   const [retailer, setRetailer] = useState<RetailerData | null>(null);
+  const [retailerLogoUrl, setRetailerLogoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -95,6 +97,12 @@ const ItemsListPage: React.FC = () => {
         // We already have associate and retailer appended
         setOrder(orderSummary);
         setRetailer(orderSummary.retailer || null);
+        // Kick off retailer logo fetch when we have retailer_id
+        if (orderSummary.retailer_id) {
+          fetchRetailerLogoUrl(orderSummary.retailer_id)
+            .then((url) => setRetailerLogoUrl(url))
+            .catch(() => setRetailerLogoUrl(null));
+        }
         
         // Step 2: Get all items for this order using the new list API with JSON filter and appends
         console.log('Fetching items...');
@@ -196,7 +204,10 @@ const ItemsListPage: React.FC = () => {
       {/* Header */}
       <header className="border-b border-gray-200 bg-white/70 backdrop-blur">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
+            {retailerLogoUrl && (
+              <img src={retailerLogoUrl} alt={retailer?.company || 'Retailer Logo'} className="h-8 md:h-10 w-auto object-contain" />
+            )}
             <img src="/logo-yourcustomjewelry.png" alt="Your Custom Jewelry" className="h-8 md:h-10 w-auto" />
           </div>
           <nav className="flex items-center space-x-6"></nav>
@@ -221,8 +232,13 @@ const ItemsListPage: React.FC = () => {
                 <User className="w-6 h-6 text-gray-700 mt-1" />
                 <div className="flex-1">
                   <div className="text-xs text-gray-500 font-medium tracking-wide uppercase">Retailer</div>
-                  <div className="text-xl text-gray-900 font-semibold">
-                    {retailer?.company || 'N/A'}
+                  <div className="flex items-center gap-3">
+                    {retailerLogoUrl && (
+                      <img src={retailerLogoUrl} alt={retailer?.company || 'Retailer Logo'} className="h-8 w-auto object-contain" />
+                    )}
+                    <div className="text-xl text-gray-900 font-semibold">
+                      {retailer?.company || 'N/A'}
+                    </div>
                   </div>
                   {/* {retailer?.company && (retailer?.retailer_name
                     <div className="text-sm text-gray-500">{retailer.company}</div>
