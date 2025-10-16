@@ -1,20 +1,5 @@
 // TypeScript declaration for model-viewer custom element
 // eslint-disable-next-line @typescript-eslint/no-namespace
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'model-viewer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
-        src?: string;
-        alt?: string;
-        'environment-image'?: string;
-        'shadow-intensity'?: string | number;
-        'camera-controls'?: boolean;
-        'touch-action'?: string;
-        style?: React.CSSProperties;
-      };
-    }
-  }
-}
 
 import React, { useEffect, useState } from "react";
 import LoadingScreen from '@/components/ui/loading-screen';
@@ -22,13 +7,7 @@ import { useParams } from "react-router-dom";
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Play, Rotate3D, Image, Gem, Ruler, Palette, Package, Layers, FileText } from 'lucide-react';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-} from '@/components/ui/carousel';
+
 import { X } from 'lucide-react';
 import { API_CONFIG, getAuthHeaders } from '@/config/api';
 import { fetchRetailerLogoUrl } from '@/lib/retailerLogo';
@@ -132,17 +111,6 @@ interface VersionData {
 
 const API_BASE = API_CONFIG.BASE_URL;
 
-// Dynamically load model-viewer script if not present
-function useModelViewerScript() {
-  useEffect(() => {
-    if (!document.querySelector('script[src*="model-viewer.min.js"]')) {
-      const script = document.createElement('script');
-      script.type = 'module';
-      script.src = 'https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js';
-      document.head.appendChild(script);
-    }
-  }, []);
-}
 
 const OrderPage: React.FC = () => {
   useModelViewerScript();
@@ -578,22 +546,6 @@ const OrderPage: React.FC = () => {
                   />
                   <div className="mt-2 text-sm text-[#837A75]">Video: {videos[mainVideoIndex].title}</div>
                 </div>
-              ) : cads.length > 0 ? (
-                <div
-                  className="w-full h-full flex items-center justify-center cursor-zoom-in"
-                  title="Preview 3D Model"
-                  onClick={() => { setModalType('3d'); setModalIndex(main3dIndex); setModalOpen(true); }}
-                >
-                  <model-viewer
-                    src={API_BASE + cads[main3dIndex].url}
-                    alt={cads[main3dIndex].title}
-                    environment-image="https://modelviewer.dev/shared-assets/environments/moon_1k.hdr"
-                    shadow-intensity="1"
-                    camera-controls
-                    touch-action="pan-y"
-                    style={{ width: '100%', height: '100%' }}
-                  ></model-viewer>
-                </div>
               ) : (
                 <div className="text-[#837A75]">No media available</div>
               )}
@@ -968,17 +920,6 @@ const OrderPage: React.FC = () => {
                 muted
                 playsInline
               />
-            )}
-            {modalType === '3d' && cads[modalIndex] && (
-              <model-viewer
-                src={API_BASE + cads[modalIndex].url}
-                alt={cads[modalIndex].title}
-                environment-image="https://modelviewer.dev/shared-assets/environments/moon_1k.hdr"
-                shadow-intensity="1"
-                camera-controls
-                touch-action="pan-y"
-                style={{ width: '100%', height: '60vh', background: 'hsl(var(--card))', borderRadius: '0.5rem', marginBottom: '1rem', border: '1px solid #E6C2FF' }}
-              ></model-viewer>
             )}
           </div>
         </div>

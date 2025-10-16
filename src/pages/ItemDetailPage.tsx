@@ -125,7 +125,7 @@ const ItemDetailPage: React.FC = () => {
         const orderRow = Array.isArray(data.data) ? data.data[0] : null;
         const retailer = orderRow?.retailer || null;
         setRetailerInfo(retailer);
-        console.log('Retailer from orders:list:', retailer);
+        // console.log('Retailer from orders:list:', retailer);
         // Fetch retailer logo via users endpoints using retailer_id
         const retailerId = orderRow?.retailer_id ?? retailer?.retailer_id;
         if (retailerId) {
