@@ -470,9 +470,11 @@ const ItemDetailPage: React.FC = () => {
                 className="h-16 w-auto object-contain mb-2"
               />
             )}
+            {!retailerLogoUrl && (
             <div className="text-lg font-semibold text-gray-900">
               {retailerInfo?.company || ''}
             </div>
+            )}
           </div>
         )}
         {/* Back Button and Header */}
