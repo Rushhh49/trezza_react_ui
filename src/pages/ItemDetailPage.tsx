@@ -104,7 +104,7 @@ const ItemDetailPage: React.FC = () => {
   // Index for sketch list
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [main3dIndex, setMain3dIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<'CAD' | 'Images' | 'Sketch'>('Images');
+  const [activeTab, setActiveTab] = useState<'CAD' | 'Images' | 'Sketch'>('CAD');
   
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -378,10 +378,14 @@ const ItemDetailPage: React.FC = () => {
     fetchVersionMedia();
   }, [currentVersion]);
 
-  // Choose default tab based on availability (prefer CAD, then Sketch)
+  // Choose default tab based on availability (prefer 3D Model, then CAD, then Sketch)
   useEffect(() => {
-    if (currentVersion?.ijewel_model_id || cads.length > 0) {
-      setActiveTab('CAD');
+    if (currentVersion?.ijewel_model_id) {
+      setActiveTab('CAD'); // 3D Model tab
+      return;
+    }
+    if (cads.length > 0) {
+      setActiveTab('Images'); // CAD files tab
       return;
     }
     if (sketches.length > 0) {
@@ -393,12 +397,16 @@ const ItemDetailPage: React.FC = () => {
 
   // Ensure active tab remains valid when availability changes
   useEffect(() => {
-    const hasCad = Boolean(currentVersion?.ijewel_model_id) || cads.length > 0;
+    const has3DModel = Boolean(currentVersion?.ijewel_model_id);
+    const hasCad = cads.length > 0;
     const hasSketch = sketches.length > 0;
-    if (activeTab === 'CAD' && !hasCad) {
-      setActiveTab(hasSketch ? 'Sketch' : 'CAD');
+    
+    if (activeTab === 'CAD' && !has3DModel) {
+      setActiveTab(hasCad ? 'Images' : (hasSketch ? 'Sketch' : 'CAD'));
+    } else if (activeTab === 'Images' && !hasCad) {
+      setActiveTab(has3DModel ? 'CAD' : (hasSketch ? 'Sketch' : 'CAD'));
     } else if (activeTab === 'Sketch' && !hasSketch) {
-      setActiveTab(hasCad ? 'CAD' : 'CAD');
+      setActiveTab(has3DModel ? 'CAD' : (hasCad ? 'Images' : 'CAD'));
     }
   }, [activeTab, currentVersion?.ijewel_model_id, cads.length, sketches.length]);
 
