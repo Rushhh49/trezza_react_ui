@@ -16,7 +16,7 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white font-['Inter'] flex flex-col">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white/70 backdrop-blur" style = {{box-shadow: 0px -50px 100px grey}}>
+      <header className="border-b border-gray-200 bg-white/70 backdrop-blur" style = {{boxShadow: "0px -50px 100px grey"}}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center">
             <img src="/logo-yourcustomjewelry.png" alt="Your Custom Jewelry" className="h-8 md:h-10 w-auto" />
@@ -25,7 +25,7 @@ const HomePage: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6" style={{ padding-top: 1.5rem }}>
+      <div className="flex-1 flex flex-col items-center justify-center px-6" style={{ paddingTop: "1.5rem" }}>
         <div className="text-center mb-8">
           <h1 className="text-4xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight mb-4">
             DREAMS, CRAFTED TO PERFECTION
