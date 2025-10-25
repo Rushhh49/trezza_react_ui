@@ -663,7 +663,7 @@ const ItemDetailPage: React.FC = () => {
           {/* Details */}
           <div className="flex-1 w-full max-w-2xl mx-auto lg:mx-0">
             <Card className="p-6 bg-white border border-gray-200 shadow-sm mb-6">
-              <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">Details</h3>
+              {/* <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">Details</h3> */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {currentVersion.item_size && (
                   <div>

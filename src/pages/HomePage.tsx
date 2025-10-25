@@ -28,10 +28,13 @@ const HomePage: React.FC = () => {
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight mb-4">
-            Welcome to YOUR CUSTOM JEWELRY
+            DREAMS, CRAFTED TO PERFECTION
           </h1>
+          {/* <h1 className="text-4xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight mb-4">
+            Welcome to YOUR CUSTOM JEWELRY
+          </h1> */}
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            Access your custom jewelry orders here!
+            Your jewelry orders are just a click away!
           </p>
         </div>
         
@@ -43,7 +46,7 @@ const HomePage: React.FC = () => {
                 Retailer Portal
               </h2>
               <p className="text-gray-500">
-                Access your retail management dashboard
+                Access your retail management dashboard here
               </p>
             </div>
             <a
@@ -63,14 +66,14 @@ const HomePage: React.FC = () => {
                 View Order
               </h2>
               <p className="text-gray-500">
-                Enter your purchase order number to view items
+                Enter your purchase order number to view your items
               </p>
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="purchaseNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                {/* <label htmlFor="purchaseNumber" className="block text-sm font-medium text-gray-700 mb-2">
                   Purchase Order Number
-                </label>
+                </label> */}
                 <input
                   id="purchaseNumber"
                   type="text"
