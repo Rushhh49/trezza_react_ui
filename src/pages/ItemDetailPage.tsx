@@ -490,9 +490,9 @@ const ItemDetailPage: React.FC = () => {
           
           <div className="mb-4">
             <div className="text-sm text-gray-500 mb-1">Purchase Order: {item.fkb_orders_to_items}</div>
-            <h1 className="text-3xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">
+            {/* <h1 className="text-3xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">
               {item.new_name}
-            </h1>
+            </h1> */}
           </div>
         </div>
 
