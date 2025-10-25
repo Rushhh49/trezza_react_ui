@@ -514,9 +514,12 @@ const ItemDetailPage: React.FC = () => {
                   key={itm.id}
                   variant={item?.id === itm.id ? "default" : "outline"}
                   onClick={() => {
-                    setItem(itm);
-                    setVersions([]);
-                    setCurrentVersion(null);
+                    // Only change if it's a different item
+                    if (item?.id !== itm.id) {
+                      setItem(itm);
+                      setVersions([]);
+                      setCurrentVersion(null);
+                    }
                   }}
                   className={item?.id === itm.id ? 
                     "bg-gray-900 text-white" : 
@@ -540,7 +543,12 @@ const ItemDetailPage: React.FC = () => {
                 <Button
                   key={version.id}
                   variant={currentVersion && currentVersion.id === version.id ? "default" : "outline"}
-                  onClick={() => handleVersionChange(version)}
+                  onClick={() => {
+                    // Only change if it's a different version
+                    if (currentVersion?.id !== version.id) {
+                      handleVersionChange(version);
+                    }
+                  }}
                   className={currentVersion && currentVersion.id === version.id ? 
                     "bg-gray-900 text-white" : 
                     "border-gray-300 text-gray-700 hover:bg-gray-100"
