@@ -522,7 +522,7 @@ const ItemDetailPage: React.FC = () => {
                     }
                   }}
                   className={item?.id === itm.id ? 
-                     "text-white" : 
+                    "bg-gray-900 text-white" : 
                     "border-gray-300 text-gray-700 hover:bg-gray-100"
                   }
                   style={{ backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }}
@@ -551,7 +551,7 @@ const ItemDetailPage: React.FC = () => {
                     }
                   }}
                   className={currentVersion && currentVersion.id === version.id ? 
-                    " text-white" : 
+                    "bg-gray-900 text-white" : 
                     "border-gray-300 text-gray-700 hover:bg-gray-100"
                   }
                   style={{ backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }}
