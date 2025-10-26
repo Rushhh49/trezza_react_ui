@@ -522,10 +522,14 @@ const ItemDetailPage: React.FC = () => {
                     }
                   }}
                   className={item?.id === itm.id ? 
-                    "bg-gray-900 text-white" : 
+                    "text-white" : 
                     "border-gray-300 text-gray-700 hover:bg-gray-100"
                   }
-                  style={{ backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }}
+                  style={
+                    item?.id === itm.id
+                      ? { backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }
+                      : { backgroundColor: "white" }
+                  }
                 >
                   {/* {`Item ${idx + 1}`} */}
                   {itm.new_name}
@@ -550,11 +554,16 @@ const ItemDetailPage: React.FC = () => {
                       handleVersionChange(version);
                     }
                   }}
-                  className={currentVersion && currentVersion.id === version.id ? 
-                    "bg-gray-900 text-white" : 
-                    "border-gray-300 text-gray-700 hover:bg-gray-100"
+                  className={
+                    currentVersion && currentVersion.id === version.id
+                      ? "text-white"
+                      : "border-gray-300 text-gray-700 hover:bg-gray-100"
                   }
-                  style={{ backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }}
+                  style={
+                    currentVersion && currentVersion.id === version.id
+                      ? { backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }
+                      : { backgroundColor: "white" }
+                  }
                 >
                   Version {version.version_number}
                 </Button>
