@@ -17,7 +17,7 @@ const HomePage: React.FC = () => {
     <div className="min-h-screen bg-white font-['Inter'] flex flex-col">
       {/* Header */}
       <header className="border-b border-gray-200 bg-white/70 backdrop-blur" style = {{boxShadow: "0px -50px 100px grey"}}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center" style={{ justifyContent: "center" }}>
           <div className="flex items-center">
             <img src="/logo-yourcustomjewelry.png" alt="Your Custom Jewelry" className="h-8 md:h-10 w-auto" />
           </div>

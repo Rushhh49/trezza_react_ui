@@ -69,8 +69,8 @@ const JewelryLanding = () => {
     <div className="min-h-screen bg-gradient-to-br from-background to-muted">
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto px-6 py-4" >
+          <div className="flex items-center" style={{ justifyContent: "center" }}>
             <div>
               <h1 className="text-2xl font-bold text-foreground">Your Bespoke Jewellery</h1>
               <p className="text-muted-foreground">For {retailerName}</p>
