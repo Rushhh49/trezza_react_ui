@@ -67,7 +67,7 @@ const HomePage: React.FC = () => {
                 View Order
               </h2>
               <p className="text-gray-500">
-                Enter your purchase order number to view your items
+                Enter your purchase order number to view items
               </p>
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
