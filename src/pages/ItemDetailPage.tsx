@@ -755,14 +755,14 @@ const ItemDetailPage: React.FC = () => {
 
 )}
             
-            <div className="text-center">
+            {/* <div className="text-center">
               <h3 className="text-lg font-semibold text-[#4A3C72] mb-2">
                 {allMedia[modalIndex]?.title}
               </h3>
               <p className="text-sm text-[#837A75]">
                 Image {modalIndex + 1} of {allMedia.length}
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
