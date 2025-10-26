@@ -53,7 +53,8 @@ const HomePage: React.FC = () => {
               href="https://admin.yourcustom.jewelry/"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full bg-gray-900 text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg text-center block"
+              className="w-full text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg text-center block"
+              style={{ backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }}
             >
               Retailer Login
             </a>
@@ -85,7 +86,8 @@ const HomePage: React.FC = () => {
               </div>
               <button 
                 type="submit" 
-                className="w-full bg-gray-900 text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg"
+                className="w-full text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg"
+                style={{ backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }}
               >
                 View Order
               </button>
