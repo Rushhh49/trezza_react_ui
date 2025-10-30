@@ -622,7 +622,7 @@ const ItemDetailPage: React.FC = () => {
   {/* Background image with blur */}
   {renders.length > 0 && (
     <img
-      src={renders[0].preview || renders[0].url}
+      src={API_CONFIG.BASE_URL + renders[0].url}
       alt="Render Background"
       className="absolute inset-0 w-full h-full object-cover blur-md scale-105 group-hover:blur-lg transition-all duration-500"
     />
