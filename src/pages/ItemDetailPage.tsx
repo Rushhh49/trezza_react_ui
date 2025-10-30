@@ -348,7 +348,7 @@ const ItemDetailPage: React.FC = () => {
         
         // Fetch render files (list endpoint similar to references) for selected item
         try {
-          const rendersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/render_file:list`, {
+          const rendersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/render_link:list`, {
             headers: getAuthHeaders()
           });
           if (rendersResponse.ok) {
