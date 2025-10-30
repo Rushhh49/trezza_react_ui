@@ -622,10 +622,10 @@ const ItemDetailPage: React.FC = () => {
   {/* Background image with blur */}
   {renders.length > 0 && (
     <img
-      src={API_CONFIG.BASE_URL + renders[0].url}
-      alt="Render Background"
-      className="absolute inset-0 w-full h-full object-cover blur-md scale-105 group-hover:blur-lg transition-all duration-500"
-    />
+  src={API_CONFIG.BASE_URL + renders[0].url}
+  alt="Render Background"
+  className="absolute inset-0 w-full h-full object-cover blur-[1px] scale-105 group-hover:blur-[2px] transition-all duration-500"
+/>
   )}
 
   {/* Dark overlay for contrast */}
