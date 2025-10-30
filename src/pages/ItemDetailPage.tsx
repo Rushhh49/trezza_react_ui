@@ -613,7 +613,7 @@ const ItemDetailPage: React.FC = () => {
           src={`https://drive.ijewel3d.com/drive/files/${currentVersion.ijewel_model_id}/embedded`}
         />
       </div>
-    ) : currentVersion.render_link ? (
+    ) : currentVersion.render_link && !currentVersion.ijewel_model_id ? (
       // Clickable div for render link redirection
       <div
         onClick={() => window.open(currentVersion.render_link!, "_blank")}
