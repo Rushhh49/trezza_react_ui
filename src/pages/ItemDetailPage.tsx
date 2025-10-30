@@ -634,7 +634,7 @@ const ItemDetailPage: React.FC = () => {
   {/* Foreground content */}
   <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white drop-shadow-lg">
     <Image className="w-12 h-12 mb-3 text-[#D1C5B8]" />
-    <p className="font-medium text-lg tracking-wide">Click to view CAD render</p>
+    <p className="font-medium text-lg tracking-wide">Click to view 3D Model</p>
   </div>
 </div>
 
