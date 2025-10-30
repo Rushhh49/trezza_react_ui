@@ -624,7 +624,7 @@ const ItemDetailPage: React.FC = () => {
     <img
   src={API_CONFIG.BASE_URL + renders[0].url}
   alt="Render Background"
-  className="absolute inset-0 w-full h-full object-cover blur-[1px] scale-105 group-hover:blur-[2px] transition-all duration-500"
+  className="absolute inset-0 w-full h-full object-cover blur-[2px] scale-105 group-hover:blur-[4px] transition-all duration-500"
 />
   )}
 
