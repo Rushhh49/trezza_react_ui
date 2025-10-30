@@ -44,14 +44,14 @@ interface VersionData {
   render_link?: string | null;
 }
 
-// // Removed image/video reference files; not used anymore
-// interface RenderFile {
-//   id: number;
-//   title: string;
-//   url: string;
-//   preview: string;
-//   mimetype: string;
-// }
+// Removed image/video reference files; not used anymore
+interface RenderFile {
+  id: number;
+  title: string;
+  url: string;
+  preview: string;
+  mimetype: string;
+}
 
 interface CadFile {
   id: number;
@@ -94,7 +94,7 @@ const ItemDetailPage: React.FC = () => {
   const [versions, setVersions] = useState<VersionData[]>([]);
   const [currentVersion, setCurrentVersion] = useState<VersionData | null>(null);
   // No more image references
-  // const [images, setImages] = useState<ReferenceFile[]>([]);
+  const [renders, setRenders] = useState<RenderFile[]>([]);
 
   const [cads, setCads] = useState<CadFile[]>([]);
   const [sketches, setSketches] = useState<SketchFile[]>([]);
@@ -347,17 +347,17 @@ const ItemDetailPage: React.FC = () => {
 
         
         // Fetch render files (list endpoint similar to references) for selected item
-        // try {
-        //   const rendersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/render_file:list`, {
-        //     headers: getAuthHeaders()
-        //   });
-        //   if (rendersResponse.ok) {
-        //     const rendersData = await rendersResponse.json();
-        //     setRenders(Array.isArray(rendersData.data) ? rendersData.data : []);
-        //   }
-        // } catch (err) {
-        //   console.warn('Failed to fetch render files:', err);
-        // }
+        try {
+          const rendersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/render_file:list`, {
+            headers: getAuthHeaders()
+          });
+          if (rendersResponse.ok) {
+            const rendersData = await rendersResponse.json();
+            setRenders(Array.isArray(rendersData.data) ? rendersData.data : []);
+          }
+        } catch (err) {
+          console.warn('Failed to fetch render files:', err);
+        }
 
         // Fetch sketch files (list endpoint)
         try {
@@ -616,14 +616,28 @@ const ItemDetailPage: React.FC = () => {
     ) : currentVersion.render_link && !currentVersion.ijewel_model_id ? (
       // Clickable div for render link redirection
       <div
-        onClick={() => window.open(currentVersion.render_link!, "_blank")}
-        className="w-full mb-4 h-96 flex items-center justify-center rounded-lg border border-gray-200 bg-gray-100 cursor-pointer hover:bg-gray-200 transition-all"
-      >
-        <div className="text-center text-gray-600">
-          <Image className="w-12 h-12 mx-auto mb-2 text-[#837A75]" />
-          <p className="font-medium">Click to view CAD render</p>
-        </div>
-      </div>
+  onClick={() => window.open(currentVersion.render_link!, "_blank")}
+  className="relative w-full mb-4 h-96 rounded-lg border border-gray-200 overflow-hidden cursor-pointer group"
+>
+  {/* Background image with blur */}
+  {renders.length > 0 && (
+    <img
+      src={renders[0].preview || renders[0].url}
+      alt="Render Background"
+      className="absolute inset-0 w-full h-full object-cover blur-md scale-105 group-hover:blur-lg transition-all duration-500"
+    />
+  )}
+
+  {/* Dark overlay for contrast */}
+  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-all duration-500" />
+
+  {/* Foreground content */}
+  <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white drop-shadow-lg">
+    <Image className="w-12 h-12 mb-3 text-[#D1C5B8]" />
+    <p className="font-medium text-lg tracking-wide">Click to view CAD render</p>
+  </div>
+</div>
+
     ) : (
       // Fallback if no ijewel model or render link
       <div className="w-full mb-4 h-96 flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-500">
