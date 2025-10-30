@@ -41,6 +41,7 @@ interface VersionData {
   version_quantity: number | null;
   fkb_items_and_versions: string;
   ijewel_model_id?: string | null;
+  render_link?: string | null;
 }
 
 // // Removed image/video reference files; not used anymore
@@ -594,21 +595,45 @@ const ItemDetailPage: React.FC = () => {
             </div>
 
             {/* CAD Viewer (iframe) */}
-            {activeTab === 'CAD' && currentVersion.ijewel_model_id && (
-              <div className="w-full mb-4 rounded-lg overflow-hidden border border-gray-200">
-                <iframe
-                  title="CAD Viewer"
-                  frameBorder={0}
-                  allowFullScreen
-                  mozallowfullscreen="true"
-                  webkitallowfullscreen="true"
-                  width="100%"
-                  height="360px"
-                  allow="autoplay; fullscreen; xr-spatial-tracking; web-share"
-                  src={`https://drive.ijewel3d.com/drive/files/${currentVersion.ijewel_model_id}/embedded`}
-                />
-              </div>
-            )}
+            {activeTab === 'CAD' && (
+  <>
+    {currentVersion.ijewel_model_id ? (
+      // Render iJewel iframe
+      <div className="w-full mb-4 rounded-lg overflow-hidden border border-gray-200">
+        <iframe
+          title="CAD Viewer"
+          frameBorder={0}
+          allowFullScreen
+          mozallowfullscreen="true"
+          webkitallowfullscreen="true"
+          width="100%"
+          height="360px"
+          allow="autoplay; fullscreen; xr-spatial-tracking; web-share"
+          src={`https://drive.ijewel3d.com/drive/files/${currentVersion.ijewel_model_id}/embedded`}
+        />
+      </div>
+    ) : currentVersion.render_link ? (
+      // Clickable div for render link redirection
+      <div
+        onClick={() => window.open(currentVersion.render_link!, "_blank")}
+        className="w-full mb-4 h-96 flex items-center justify-center rounded-lg border border-gray-200 bg-gray-100 cursor-pointer hover:bg-gray-200 transition-all"
+      >
+        <div className="text-center text-gray-600">
+          <Image className="w-12 h-12 mx-auto mb-2 text-[#837A75]" />
+          <p className="font-medium">Click to view CAD render</p>
+        </div>
+      </div>
+    ) : (
+      // Fallback if no ijewel model or render link
+      <div className="w-full mb-4 h-96 flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-500">
+        <div className="text-center">
+          <Image className="w-12 h-12 mx-auto mb-2 text-[#837A75]" />
+          <p>No CAD model or render available</p>
+        </div>
+      </div>
+    )}
+  </>
+)}
             {/* Images/Sketch display: render as simple images */}
 
             {activeTab !== 'CAD' && (
