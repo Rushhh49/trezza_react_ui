@@ -288,7 +288,7 @@ const ItemDetailPage: React.FC = () => {
           const versionsData = await versionsResponse.json();
           const itemVersions = Array.isArray(versionsData.data) ? versionsData.data : [];
           itemVersions.sort((a: any, b: any) => b.version_number - a.version_number);
-            
+
           setVersions(itemVersions);
           setCurrentVersion(itemVersions[0] || null);
         }
@@ -382,7 +382,7 @@ const ItemDetailPage: React.FC = () => {
 
   // Choose default tab based on availability (prefer 3D Model, then CAD, then Sketch)
   useEffect(() => {
-    if (currentVersion?.ijewel_model_id) {
+    if (currentVersion?.ijewel_model_id || currentVersion?.render_link) {
       setActiveTab('CAD'); // 3D Model tab
       return;
     }
@@ -395,11 +395,11 @@ const ItemDetailPage: React.FC = () => {
       return;
     }
     setActiveTab('CAD');
-  }, [currentVersion?.ijewel_model_id, cads.length, sketches.length]);
+  }, [currentVersion?.ijewel_model_id, currentVersion?.render_link, cads.length, sketches.length]);
 
   // Ensure active tab remains valid when availability changes
   useEffect(() => {
-    const has3DModel = Boolean(currentVersion?.ijewel_model_id);
+    const has3DModel = Boolean(currentVersion?.ijewel_model_id || currentVersion?.render_link);
     const hasCad = cads.length > 0;
     const hasSketch = sketches.length > 0;
     
@@ -410,7 +410,7 @@ const ItemDetailPage: React.FC = () => {
     } else if (activeTab === 'Sketch' && !hasSketch) {
       setActiveTab(has3DModel ? 'CAD' : (hasCad ? 'Images' : 'CAD'));
     }
-  }, [activeTab, currentVersion?.ijewel_model_id, cads.length, sketches.length]);
+  }, [activeTab, currentVersion?.ijewel_model_id, currentVersion?.render_link, cads.length, sketches.length]);
 
   // Reset indices when switching tabs
   useEffect(() => {
@@ -582,9 +582,9 @@ const ItemDetailPage: React.FC = () => {
             <div className="w-full mb-4">
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
                 <TabsList className="flex w-full gap-2">
-                  {currentVersion?.ijewel_model_id && (
-                    <TabsTrigger value="CAD">3D Model</TabsTrigger>
-                  )}
+                {(currentVersion?.ijewel_model_id || currentVersion?.render_link) && (
+      <TabsTrigger value="CAD">3D Model</TabsTrigger>
+    )}
                   {cads.length > 0 && (
                     <TabsTrigger value="Images">CAD</TabsTrigger>
                   )}
