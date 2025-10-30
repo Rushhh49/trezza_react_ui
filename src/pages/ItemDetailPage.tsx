@@ -288,6 +288,7 @@ const ItemDetailPage: React.FC = () => {
           const versionsData = await versionsResponse.json();
           const itemVersions = Array.isArray(versionsData.data) ? versionsData.data : [];
           itemVersions.sort((a: any, b: any) => b.version_number - a.version_number);
+            
           setVersions(itemVersions);
           setCurrentVersion(itemVersions[0] || null);
         }
@@ -628,7 +629,7 @@ const ItemDetailPage: React.FC = () => {
       <div className="w-full mb-4 h-96 flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-500">
         <div className="text-center">
           <Image className="w-12 h-12 mx-auto mb-2 text-[#837A75]" />
-          <p>No CAD model or render available</p>
+          <p>No CAD model, sketch or render available</p>
         </div>
       </div>
     )}
