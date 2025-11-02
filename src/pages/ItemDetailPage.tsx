@@ -624,7 +624,7 @@ const ItemDetailPage: React.FC = () => {
     <img
   src={API_CONFIG.BASE_URL + renders[0].url}
   alt="Render Background"
-  className="absolute inset-0 w-full h-full object-cover blur-[2px] scale-105 group-hover:blur-[4px] transition-all duration-500"
+  className="absolute inset-0 w-full h-full object-cover blur-[2px] scale-105 group-hover:blur-[4px] transition-all duration-500 tiny:max-h-[300px]"
 />
   )}
 
@@ -653,7 +653,9 @@ const ItemDetailPage: React.FC = () => {
 
             {activeTab !== 'CAD' && (
 
-<div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4">
+<div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4"
+
+>
 
   {allMedia.length > 0 ? (
 
@@ -663,7 +665,7 @@ const ItemDetailPage: React.FC = () => {
 
       alt={allMedia[mainImageIndex].title}
 
-      className="w-full h-full object-contain cursor-zoom-in"
+      className="w-full h-full object-contain cursor-zoom-in tiny:max-h-[300px]"
 
       onClick={() => { setModalType('image'); setModalIndex(mainImageIndex); setModalOpen(true); }}
 
@@ -714,7 +716,7 @@ const ItemDetailPage: React.FC = () => {
                             <img
                               src={API_CONFIG.BASE_URL + media.url}
                               alt={media.title}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover tiny:max-h-[300px]"
                             />
                         </div>
                       </div>
