@@ -16,8 +16,8 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white font-['Inter'] flex flex-col">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white/70 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <header className="border-b border-gray-200 bg-white/70 backdrop-blur" style = {{boxShadow: "0px -50px 100px grey"}}>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center" style={{ justifyContent: "center" }}>
           <div className="flex items-center">
             <img src="/logo-yourcustomjewelry.png" alt="Your Custom Jewelry" className="h-8 md:h-10 w-auto" />
           </div>
@@ -25,13 +25,16 @@ const HomePage: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6">
+      <div className="flex-1 flex flex-col items-center justify-center px-6" style={{ paddingTop: "1.5rem" }}>
         <div className="text-center mb-8">
           <h1 className="text-4xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight mb-4">
-            Welcome to YOUR CUSTOM JEWELRY
+            DREAMS, CRAFTED TO PERFECTION
           </h1>
+          {/* <h1 className="text-4xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight mb-4">
+            Welcome to YOUR CUSTOM JEWELRY
+          </h1> */}
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            Access your custom jewelry orders here!
+            Your jewelry orders are just a click away!
           </p>
         </div>
         
@@ -43,14 +46,15 @@ const HomePage: React.FC = () => {
                 Retailer Portal
               </h2>
               <p className="text-gray-500">
-                Access your retail management dashboard
+                Access your retail management dashboard here
               </p>
             </div>
             <a
               href="https://admin.yourcustom.jewelry/"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full bg-gray-900 text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg text-center block"
+              className="w-full text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg text-center block"
+              style={{ backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }}
             >
               Retailer Login
             </a>
@@ -68,9 +72,9 @@ const HomePage: React.FC = () => {
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="purchaseNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                {/* <label htmlFor="purchaseNumber" className="block text-sm font-medium text-gray-700 mb-2">
                   Purchase Order Number
-                </label>
+                </label> */}
                 <input
                   id="purchaseNumber"
                   type="text"
@@ -82,7 +86,8 @@ const HomePage: React.FC = () => {
               </div>
               <button 
                 type="submit" 
-                className="w-full bg-gray-900 text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg"
+                className="w-full text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg"
+                style={{ backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }}
               >
                 View Order
               </button>
@@ -94,7 +99,7 @@ const HomePage: React.FC = () => {
       {/* Footer */}
       <footer className="border-t border-gray-200 py-4 mt-auto bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center text-gray-500 text-sm">© 2024 YOUR CUSTOM JEWELRY. All rights reserved.</div>
+          <div className="text-center text-gray-500 text-xs">Copyright © 2025 Your Custom Jewelry. All rights reserved.</div>
         </div>
       </footer>
     </div>

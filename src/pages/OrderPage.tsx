@@ -881,7 +881,7 @@ const OrderPage: React.FC = () => {
       {/* Footer */}
       <footer className="border-t border-gray-200 py-4 mt-auto bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center text-gray-500 text-sm">© 2024 YOUR CUSTOM JEWELRY. All rights reserved.</div>
+          <div className="text-center text-gray-500 text-xs">Copyright © 2025 Your Custom Jewelry. All rights reserved.</div>
         </div>
       </footer>
       {/* Media Preview Modal (keep as before) */}

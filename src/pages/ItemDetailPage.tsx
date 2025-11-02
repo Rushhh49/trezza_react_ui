@@ -41,16 +41,17 @@ interface VersionData {
   version_quantity: number | null;
   fkb_items_and_versions: string;
   ijewel_model_id?: string | null;
+  render_link?: string | null;
 }
 
-// // Removed image/video reference files; not used anymore
-// interface RenderFile {
-//   id: number;
-//   title: string;
-//   url: string;
-//   preview: string;
-//   mimetype: string;
-// }
+// Removed image/video reference files; not used anymore
+interface RenderFile {
+  id: number;
+  title: string;
+  url: string;
+  preview: string;
+  mimetype: string;
+}
 
 interface CadFile {
   id: number;
@@ -93,7 +94,7 @@ const ItemDetailPage: React.FC = () => {
   const [versions, setVersions] = useState<VersionData[]>([]);
   const [currentVersion, setCurrentVersion] = useState<VersionData | null>(null);
   // No more image references
-  // const [images, setImages] = useState<ReferenceFile[]>([]);
+  const [renders, setRenders] = useState<RenderFile[]>([]);
 
   const [cads, setCads] = useState<CadFile[]>([]);
   const [sketches, setSketches] = useState<SketchFile[]>([]);
@@ -104,7 +105,7 @@ const ItemDetailPage: React.FC = () => {
   // Index for sketch list
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [main3dIndex, setMain3dIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<'CAD' | 'Images' | 'Sketch'>('Images');
+  const [activeTab, setActiveTab] = useState<'CAD' | 'Images' | 'Sketch'>('CAD');
   
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -287,6 +288,7 @@ const ItemDetailPage: React.FC = () => {
           const versionsData = await versionsResponse.json();
           const itemVersions = Array.isArray(versionsData.data) ? versionsData.data : [];
           itemVersions.sort((a: any, b: any) => b.version_number - a.version_number);
+
           setVersions(itemVersions);
           setCurrentVersion(itemVersions[0] || null);
         }
@@ -345,17 +347,17 @@ const ItemDetailPage: React.FC = () => {
 
         
         // Fetch render files (list endpoint similar to references) for selected item
-        // try {
-        //   const rendersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/render_file:list`, {
-        //     headers: getAuthHeaders()
-        //   });
-        //   if (rendersResponse.ok) {
-        //     const rendersData = await rendersResponse.json();
-        //     setRenders(Array.isArray(rendersData.data) ? rendersData.data : []);
-        //   }
-        // } catch (err) {
-        //   console.warn('Failed to fetch render files:', err);
-        // }
+        try {
+          const rendersResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/render_image:list`, {
+            headers: getAuthHeaders()
+          });
+          if (rendersResponse.ok) {
+            const rendersData = await rendersResponse.json();
+            setRenders(Array.isArray(rendersData.data) ? rendersData.data : []);
+          }
+        } catch (err) {
+          console.warn('Failed to fetch render files:', err);
+        }
 
         // Fetch sketch files (list endpoint)
         try {
@@ -378,10 +380,14 @@ const ItemDetailPage: React.FC = () => {
     fetchVersionMedia();
   }, [currentVersion]);
 
-  // Choose default tab based on availability (prefer CAD, then Sketch)
+  // Choose default tab based on availability (prefer 3D Model, then CAD, then Sketch)
   useEffect(() => {
-    if (currentVersion?.ijewel_model_id || cads.length > 0) {
-      setActiveTab('CAD');
+    if (currentVersion?.ijewel_model_id || currentVersion?.render_link) {
+      setActiveTab('CAD'); // 3D Model tab
+      return;
+    }
+    if (cads.length > 0) {
+      setActiveTab('Images'); // CAD files tab
       return;
     }
     if (sketches.length > 0) {
@@ -389,18 +395,22 @@ const ItemDetailPage: React.FC = () => {
       return;
     }
     setActiveTab('CAD');
-  }, [currentVersion?.ijewel_model_id, cads.length, sketches.length]);
+  }, [currentVersion?.ijewel_model_id, currentVersion?.render_link, cads.length, sketches.length]);
 
   // Ensure active tab remains valid when availability changes
   useEffect(() => {
-    const hasCad = Boolean(currentVersion?.ijewel_model_id) || cads.length > 0;
+    const has3DModel = Boolean(currentVersion?.ijewel_model_id || currentVersion?.render_link);
+    const hasCad = cads.length > 0;
     const hasSketch = sketches.length > 0;
-    if (activeTab === 'CAD' && !hasCad) {
-      setActiveTab(hasSketch ? 'Sketch' : 'CAD');
+    
+    if (activeTab === 'CAD' && !has3DModel) {
+      setActiveTab(hasCad ? 'Images' : (hasSketch ? 'Sketch' : 'CAD'));
+    } else if (activeTab === 'Images' && !hasCad) {
+      setActiveTab(has3DModel ? 'CAD' : (hasSketch ? 'Sketch' : 'CAD'));
     } else if (activeTab === 'Sketch' && !hasSketch) {
-      setActiveTab(hasCad ? 'CAD' : 'CAD');
+      setActiveTab(has3DModel ? 'CAD' : (hasCad ? 'Images' : 'CAD'));
     }
-  }, [activeTab, currentVersion?.ijewel_model_id, cads.length, sketches.length]);
+  }, [activeTab, currentVersion?.ijewel_model_id, currentVersion?.render_link, cads.length, sketches.length]);
 
   // Reset indices when switching tabs
   useEffect(() => {
@@ -448,8 +458,8 @@ const ItemDetailPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white font-['Inter'] flex flex-col">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white/70 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <header className="border-b border-gray-200 bg-white/70 backdrop-blur" style = {{boxShadow: "0px -50px 100px grey"}}>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center" style={{ justifyContent: "center" }}>
           <div className="flex items-center">
             <button onClick={() => navigate('/')} aria-label="Go to Home">
               <img src="/logo-yourcustomjewelry.png" alt="Your Custom Jewelry" className="h-8 md:h-10 w-auto" />
@@ -470,9 +480,11 @@ const ItemDetailPage: React.FC = () => {
                 className="h-16 w-auto object-contain mb-2"
               />
             )}
+            {!retailerLogoUrl && (
             <div className="text-lg font-semibold text-gray-900">
               {retailerInfo?.company || ''}
             </div>
+            )}
           </div>
         )}
         {/* Back Button and Header */}
@@ -488,9 +500,9 @@ const ItemDetailPage: React.FC = () => {
           
           <div className="mb-4">
             <div className="text-sm text-gray-500 mb-1">Purchase Order: {item.fkb_orders_to_items}</div>
-            <h1 className="text-3xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">
+            {/* <h1 className="text-3xl font-semibold text-gray-900 font-['Playfair_Display'] tracking-tight">
               {item.new_name}
-            </h1>
+            </h1> */}
           </div>
         </div>
 
@@ -504,13 +516,21 @@ const ItemDetailPage: React.FC = () => {
                   key={itm.id}
                   variant={item?.id === itm.id ? "default" : "outline"}
                   onClick={() => {
-                    setItem(itm);
-                    setVersions([]);
-                    setCurrentVersion(null);
+                    // Only change if it's a different item
+                    if (item?.id !== itm.id) {
+                      setItem(itm);
+                      setVersions([]);
+                      setCurrentVersion(null);
+                    }
                   }}
                   className={item?.id === itm.id ? 
-                    "bg-gray-900 text-white" : 
+                    "text-white" : 
                     "border-gray-300 text-gray-700 hover:bg-gray-100"
+                  }
+                  style={
+                    item?.id === itm.id
+                      ? { backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }
+                      : { backgroundColor: "white" }
                   }
                 >
                   {/* {`Item ${idx + 1}`} */}
@@ -530,10 +550,21 @@ const ItemDetailPage: React.FC = () => {
                 <Button
                   key={version.id}
                   variant={currentVersion && currentVersion.id === version.id ? "default" : "outline"}
-                  onClick={() => handleVersionChange(version)}
-                  className={currentVersion && currentVersion.id === version.id ? 
-                    "bg-gray-900 text-white" : 
-                    "border-gray-300 text-gray-700 hover:bg-gray-100"
+                  onClick={() => {
+                    // Only change if it's a different version
+                    if (currentVersion?.id !== version.id) {
+                      handleVersionChange(version);
+                    }
+                  }}
+                  className={
+                    currentVersion && currentVersion.id === version.id
+                      ? "text-white"
+                      : "border-gray-300 text-gray-700 hover:bg-gray-100"
+                  }
+                  style={
+                    currentVersion && currentVersion.id === version.id
+                      ? { backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }
+                      : { backgroundColor: "white" }
                   }
                 >
                   Version {version.version_number}
@@ -551,9 +582,9 @@ const ItemDetailPage: React.FC = () => {
             <div className="w-full mb-4">
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
                 <TabsList className="flex w-full gap-2">
-                  {currentVersion?.ijewel_model_id && (
-                    <TabsTrigger value="CAD">3D Model</TabsTrigger>
-                  )}
+                {(currentVersion?.ijewel_model_id || currentVersion?.render_link) && (
+      <TabsTrigger value="CAD">3D Model</TabsTrigger>
+    )}
                   {cads.length > 0 && (
                     <TabsTrigger value="Images">CAD</TabsTrigger>
                   )}
@@ -565,21 +596,59 @@ const ItemDetailPage: React.FC = () => {
             </div>
 
             {/* CAD Viewer (iframe) */}
-            {activeTab === 'CAD' && currentVersion.ijewel_model_id && (
-              <div className="w-full mb-4 rounded-lg overflow-hidden border border-gray-200">
-                <iframe
-                  title="CAD Viewer"
-                  frameBorder={0}
-                  allowFullScreen
-                  mozallowfullscreen="true"
-                  webkitallowfullscreen="true"
-                  width="100%"
-                  height="360px"
-                  allow="autoplay; fullscreen; xr-spatial-tracking; web-share"
-                  src={`https://drive.ijewel3d.com/drive/files/${currentVersion.ijewel_model_id}/embedded`}
-                />
-              </div>
-            )}
+            {activeTab === 'CAD' && (
+  <>
+    {currentVersion.ijewel_model_id ? (
+      // Render iJewel iframe
+      <div className="w-full mb-4 rounded-lg overflow-hidden border border-gray-200">
+        <iframe
+          title="CAD Viewer"
+          frameBorder={0}
+          allowFullScreen
+          mozallowfullscreen="true"
+          webkitallowfullscreen="true"
+          width="100%"
+          height="360px"
+          allow="autoplay; fullscreen; xr-spatial-tracking; web-share"
+          src={`https://drive.ijewel3d.com/drive/files/${currentVersion.ijewel_model_id}/embedded`}
+        />
+      </div>
+    ) : currentVersion.render_link && !currentVersion.ijewel_model_id ? (
+      // Clickable div for render link redirection
+      <div
+  onClick={() => window.open(currentVersion.render_link!, "_blank")}
+  className="relative w-full mb-4 h-96 rounded-lg border border-gray-200 overflow-hidden cursor-pointer group"
+>
+  {/* Background image with blur */}
+  {renders.length > 0 && (
+    <img
+  src={API_CONFIG.BASE_URL + renders[0].url}
+  alt="Render Background"
+  className="absolute inset-0 w-full h-full object-cover blur-[2px] scale-105 group-hover:blur-[4px] transition-all duration-500"
+/>
+  )}
+
+  {/* Dark overlay for contrast */}
+  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-all duration-500" />
+
+  {/* Foreground content */}
+  <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white drop-shadow-lg">
+    <Image className="w-12 h-12 mb-3 text-[#D1C5B8]" />
+    <p className="font-medium text-lg tracking-wide">Click to view 3D Model</p>
+  </div>
+</div>
+
+    ) : (
+      // Fallback if no ijewel model or render link
+      <div className="w-full mb-4 h-96 flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-500">
+        <div className="text-center">
+          <Image className="w-12 h-12 mx-auto mb-2 text-[#837A75]" />
+          <p>No CAD model, sketch or render available</p>
+        </div>
+      </div>
+    )}
+  </>
+)}
             {/* Images/Sketch display: render as simple images */}
 
             {activeTab !== 'CAD' && (
@@ -661,7 +730,7 @@ const ItemDetailPage: React.FC = () => {
           {/* Details */}
           <div className="flex-1 w-full max-w-2xl mx-auto lg:mx-0">
             <Card className="p-6 bg-white border border-gray-200 shadow-sm mb-6">
-              <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">Details</h3>
+              {/* <h3 className="text-lg font-medium text-gray-900 font-['Playfair_Display']">Details</h3> */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {currentVersion.item_size && (
                   <div>
@@ -690,7 +759,7 @@ const ItemDetailPage: React.FC = () => {
       {/* Footer */}
       <footer className="border-t border-gray-200 py-4 mt-auto bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center text-gray-500 text-sm">© 2024 YOUR CUSTOM JEWELRY. All rights reserved.</div>
+          <div className="text-center text-gray-500 text-xs">Copyright © 2025 Your Custom Jewelry. All rights reserved.</div>
         </div>
       </footer>
 
@@ -726,14 +795,14 @@ const ItemDetailPage: React.FC = () => {
 
 )}
             
-            <div className="text-center">
+            {/* <div className="text-center">
               <h3 className="text-lg font-semibold text-[#4A3C72] mb-2">
                 {allMedia[modalIndex]?.title}
               </h3>
               <p className="text-sm text-[#837A75]">
                 Image {modalIndex + 1} of {allMedia.length}
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
