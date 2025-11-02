@@ -5,7 +5,7 @@ interface LoadingScreenProps {
   fullscreen?: boolean;
 }
 
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ message = "Customising your jewelry...", fullscreen = true }) => {
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ message = "Customizing your jewelry...", fullscreen = true }) => {
   return (
     <div className={`${fullscreen ? 'min-h-screen' : ''} bg-white flex items-center justify-center`}>
       <div className="flex flex-col items-center gap-3">

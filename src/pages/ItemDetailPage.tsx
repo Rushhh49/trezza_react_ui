@@ -488,15 +488,7 @@ const ItemDetailPage: React.FC = () => {
           </div>
         )}
         {/* Back Button and Header */}
-        <div className="mb-6">
-          {/* <Button 
-            variant="ghost" 
-            onClick={goBack}
-            className="mb-4 text-gray-700 hover:bg-gray-100"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Items
-          </Button> */}
+        <div className="mb-6 text-center">
           
           <div className="mb-4">
             <div className="text-sm text-gray-500 mb-1">Purchase Order: {item.fkb_orders_to_items}</div>
@@ -575,7 +567,7 @@ const ItemDetailPage: React.FC = () => {
         )}
 
         {/* Main Content Row: Media and Details */}
-        <div className="flex flex-col lg:flex-row gap-8 items-start w-full">
+        <div className="flex flex-col lg:flex-row gap-8 items-start w-full" style={{ width:"90vw" }}>
           {/* Media Container */}
           <div className="w-full lg:w-[500px] flex-shrink-0 flex flex-col items-center">
             {/* Media Tabs */}
@@ -617,7 +609,7 @@ const ItemDetailPage: React.FC = () => {
       // Clickable div for render link redirection
       <div
   onClick={() => window.open(currentVersion.render_link!, "_blank")}
-  className="relative w-full mb-4 h-96 rounded-lg border border-gray-200 overflow-hidden cursor-pointer group"
+  className="relative w-full mb-4 h-96 rounded-lg border border-gray-200 overflow-hidden cursor-pointer group "
 >
   {/* Background image with blur */}
   {renders.length > 0 && (
@@ -653,7 +645,9 @@ const ItemDetailPage: React.FC = () => {
 
             {activeTab !== 'CAD' && (
 
-<div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4">
+<div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4 "
+
+>
 
   {allMedia.length > 0 ? (
 
@@ -702,7 +696,7 @@ const ItemDetailPage: React.FC = () => {
 
           <div 
 
-            className={`aspect-square bg-white rounded border-2 overflow-hidden cursor-pointer hover:border-[#4A3C72] transition-colors ${
+            className={` aspect-square bg-white rounded border-2 overflow-hidden cursor-pointer hover:border-[#4A3C72] transition-colors ${
 
               index === mainImageIndex ? 'border-[#4A3C72]' : 'border-gray-200'
 
