@@ -617,14 +617,14 @@ const ItemDetailPage: React.FC = () => {
       // Clickable div for render link redirection
       <div
   onClick={() => window.open(currentVersion.render_link!, "_blank")}
-  className="relative w-full mb-4 h-96 rounded-lg border border-gray-200 overflow-hidden cursor-pointer group"
+  className="relative w-full mb-4 h-96 rounded-lg border border-gray-200 overflow-hidden cursor-pointer group tiny:max-h-[300px]"
 >
   {/* Background image with blur */}
   {renders.length > 0 && (
     <img
   src={API_CONFIG.BASE_URL + renders[0].url}
   alt="Render Background"
-  className="absolute inset-0 w-full h-full object-cover blur-[2px] scale-105 group-hover:blur-[4px] transition-all duration-500 tiny:max-h-[300px]"
+  className="absolute inset-0 w-full h-full object-cover blur-[2px] scale-105 group-hover:blur-[4px] transition-all duration-500"
 />
   )}
 
@@ -653,7 +653,7 @@ const ItemDetailPage: React.FC = () => {
 
             {activeTab !== 'CAD' && (
 
-<div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4"
+<div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4 tiny:max-h-[300px]"
 
 >
 
@@ -665,7 +665,7 @@ const ItemDetailPage: React.FC = () => {
 
       alt={allMedia[mainImageIndex].title}
 
-      className="w-full h-full object-contain cursor-zoom-in tiny:max-h-[300px]"
+      className="w-full h-full object-contain cursor-zoom-in"
 
       onClick={() => { setModalType('image'); setModalIndex(mainImageIndex); setModalOpen(true); }}
 
@@ -704,7 +704,7 @@ const ItemDetailPage: React.FC = () => {
 
           <div 
 
-            className={`aspect-square bg-white rounded border-2 overflow-hidden cursor-pointer hover:border-[#4A3C72] transition-colors ${
+            className={`tiny:max-h-[300px] aspect-square bg-white rounded border-2 overflow-hidden cursor-pointer hover:border-[#4A3C72] transition-colors ${
 
               index === mainImageIndex ? 'border-[#4A3C72]' : 'border-gray-200'
 
@@ -716,7 +716,7 @@ const ItemDetailPage: React.FC = () => {
                             <img
                               src={API_CONFIG.BASE_URL + media.url}
                               alt={media.title}
-                              className="w-full h-full object-cover tiny:max-h-[300px]"
+                              className="w-full h-full object-cover"
                             />
                         </div>
                       </div>
