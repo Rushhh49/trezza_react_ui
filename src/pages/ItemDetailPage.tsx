@@ -567,7 +567,7 @@ const ItemDetailPage: React.FC = () => {
         )}
 
         {/* Main Content Row: Media and Details */}
-        <div className="flex flex-col lg:flex-row gap-8 items-start w-full" style={{ width:"90vw" }}>
+        <div className="flex flex-col lg:flex-row gap-8 items-start w-full w-[90vw] lg:w-full">
           {/* Media Container */}
           <div className="w-full lg:w-[500px] flex-shrink-0 flex flex-col items-center">
             {/* Media Tabs */}
