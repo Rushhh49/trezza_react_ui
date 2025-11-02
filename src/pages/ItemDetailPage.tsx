@@ -617,7 +617,7 @@ const ItemDetailPage: React.FC = () => {
       // Clickable div for render link redirection
       <div
   onClick={() => window.open(currentVersion.render_link!, "_blank")}
-  className="relative w-full mb-4 h-96 rounded-lg border border-gray-200 overflow-hidden cursor-pointer group tiny:max-h-[300px]"
+  className="relative w-full mb-4 h-96 rounded-lg border border-gray-200 overflow-hidden cursor-pointer group "
 >
   {/* Background image with blur */}
   {renders.length > 0 && (
@@ -653,7 +653,7 @@ const ItemDetailPage: React.FC = () => {
 
             {activeTab !== 'CAD' && (
 
-<div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4 tiny:max-h-[300px]"
+<div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4 "
 
 >
 
@@ -704,7 +704,7 @@ const ItemDetailPage: React.FC = () => {
 
           <div 
 
-            className={`tiny:max-h-[300px] aspect-square bg-white rounded border-2 overflow-hidden cursor-pointer hover:border-[#4A3C72] transition-colors ${
+            className={` aspect-square bg-white rounded border-2 overflow-hidden cursor-pointer hover:border-[#4A3C72] transition-colors ${
 
               index === mainImageIndex ? 'border-[#4A3C72]' : 'border-gray-200'
 
