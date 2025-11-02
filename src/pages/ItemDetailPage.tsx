@@ -488,15 +488,7 @@ const ItemDetailPage: React.FC = () => {
           </div>
         )}
         {/* Back Button and Header */}
-        <div className="mb-6">
-          {/* <Button 
-            variant="ghost" 
-            onClick={goBack}
-            className="mb-4 text-gray-700 hover:bg-gray-100"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Items
-          </Button> */}
+        <div className="mb-6" style={{ textAlign: 'center' }}>
           
           <div className="mb-4">
             <div className="text-sm text-gray-500 mb-1">Purchase Order: {item.fkb_orders_to_items}</div>
