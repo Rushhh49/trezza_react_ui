@@ -50,14 +50,27 @@ const HomePage: React.FC = () => {
               </p>
             </div>
             <a
-              href="https://admin.yourcustom.jewelry/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg text-center block"
-              style={{ backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }}
-            >
-              Retailer Login
-            </a>
+  href="https://admin.yourcustom.jewelry/"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="w-full text-white py-3 px-6 rounded-md font-medium text-lg text-center block transition-all duration-300"
+  style={{
+    backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.backgroundColor = "rgb(140 130 100 / var(--tw-bg-opacity, 1))";
+    e.currentTarget.style.transform = "translateY(-2px)";
+    e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.backgroundColor = "rgb(165 154 119 / var(--tw-bg-opacity, 1))";
+    e.currentTarget.style.transform = "translateY(0)";
+    e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
+  }}
+>
+  Retailer Login
+</a>
           </Card>
 
           {/* Purchase Order Card */}
@@ -85,12 +98,26 @@ const HomePage: React.FC = () => {
                 />
               </div>
               <button 
-                type="submit" 
-                className="w-full text-white py-3 px-6 rounded-md hover:bg-black transition-colors font-medium text-lg"
-                style={{ backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))" }}
-              >
-                View Order
-              </button>
+  type="submit" 
+  className="w-full text-white py-3 px-6 rounded-md font-medium text-lg transition-all duration-300"
+  style={{
+    backgroundColor: "rgb(165 154 119 / var(--tw-bg-opacity, 1))",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.backgroundColor = "rgb(140 130 100 / var(--tw-bg-opacity, 1))";
+    e.currentTarget.style.transform = "translateY(-2px)";
+    e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.backgroundColor = "rgb(165 154 119 / var(--tw-bg-opacity, 1))";
+    e.currentTarget.style.transform = "translateY(0)";
+    e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
+  }}
+>
+  View Order
+</button>
+
             </form>
           </Card>
         </div>
