@@ -488,7 +488,7 @@ const ItemDetailPage: React.FC = () => {
           </div>
         )}
         {/* Back Button and Header */}
-        <div className="mb-6" style={{ textAlign: 'center' }}>
+        <div className="mb-6 text-center">
           
           <div className="mb-4">
             <div className="text-sm text-gray-500 mb-1">Purchase Order: {item.fkb_orders_to_items}</div>
