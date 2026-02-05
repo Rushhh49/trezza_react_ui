@@ -103,7 +103,9 @@ const ItemDetailPage: React.FC = () => {
   
   // Media indices
   // Index for sketch list
-  const [mainImageIndex, setMainImageIndex] = useState(0);
+  const [mainImageIndex, setMainImageIndex] = useState(0); // sketches
+const [mainCadIndex, setMainCadIndex] = useState(0);     // CAD images
+
   const [main3dIndex, setMain3dIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<'CAD' | 'Images' | 'Sketch'>('CAD');
   
@@ -330,19 +332,15 @@ const ItemDetailPage: React.FC = () => {
 
         // Fetch CAD file via get endpoint (single current CAD for version)
         try {
-          const cadGetResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/cad_file:get`, {
+          const cadGetResponse = await fetch(`${API_CONFIG.BASE_URL}/api/versions/${currentVersion.id}/cad_file:list`, {
             headers: getAuthHeaders()
           });
           if (cadGetResponse.ok) {
-            const cadData = await cadGetResponse.json();
-            const cadItem = cadData?.data;
-            setCads(cadItem ? [cadItem] : []);
-          } else {
-            setCads([]);
+        const cadData = await cadGetResponse.json();
+        setCads(Array.isArray(cadData.data) ? cadData.data : []);
           }
         } catch (err) {
-          console.warn('Failed to fetch CAD file via get:', err);
-          setCads([]);
+          console.warn('Failed to fetch sketch files:', err);
         }
 
         
@@ -415,8 +413,10 @@ const ItemDetailPage: React.FC = () => {
   // Reset indices when switching tabs
   useEffect(() => {
     setMainImageIndex(0);
+    setMainCadIndex(0);
     setMain3dIndex(0);
   }, [activeTab]);
+  
 
   const handleVersionChange = (version: VersionData) => {
     setCurrentVersion(version);
@@ -447,13 +447,9 @@ const ItemDetailPage: React.FC = () => {
   // Only sketch media is used for non-CAD tab
     // Build media arrays
   // Show CAD in Images tab the same way as Sketch (simple <img>)
-  const imageMedia = [
-    ...cads.map(c => ({ ...c, type: 'image' as const })),
-  ];
-  const sketchMedia = [
-    ...sketches.map(s => ({ ...s, type: 'image' as const })),
-  ];
-  const allMedia = activeTab === 'Sketch' ? sketchMedia : imageMedia;
+  const cadMedia = cads.map(c => ({ ...c, type: 'image' as const }));
+  const sketchMedia = sketches.map(s => ({ ...s, type: 'image' as const }));
+  
 
   return (
     <div className="min-h-screen bg-white font-['Inter'] flex flex-col">
@@ -641,84 +637,110 @@ const ItemDetailPage: React.FC = () => {
     )}
   </>
 )}
+
+
             {/* Images/Sketch display: render as simple images */}
 
-            {activeTab !== 'CAD' && (
-
-<div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4 "
-
->
-
-  {allMedia.length > 0 ? (
-
-    <img
-
-      src={API_CONFIG.BASE_URL + allMedia[mainImageIndex].url}
-
-      alt={allMedia[mainImageIndex].title}
-
-      className="w-full h-full object-contain cursor-zoom-in"
-
-      onClick={() => { setModalType('image'); setModalIndex(mainImageIndex); setModalOpen(true); }}
-
-    />
-
-  ) : (
-
-    <div className="text-[#837A75] text-center">
-
-      <Image className="w-16 h-16 mx-auto mb-2 text-[#837A75]" />
-
-      <p>No media available</p>
-
-    </div>
-
-  )}
-
-</div>
-
-)}
-            
-
+        
             {/* Media carousel for Sketch */}
 
-            {activeTab === 'Sketch' && allMedia.length > 1 && (
+            {/* MAIN IMAGE (CAD or Sketch) */}
+{activeTab === 'Images' && (
+  <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4">
+    {cadMedia.length > 0 ? (
+      <img
+        src={API_CONFIG.BASE_URL + cadMedia[mainCadIndex].url}
+        alt={cadMedia[mainCadIndex].title}
+        className="w-full h-full object-contain cursor-zoom-in"
+        onClick={() => {
+          setModalType('image');
+          setModalIndex(mainCadIndex);
+          setModalOpen(true);
+        }}
+      />
+    ) : (
+      <div className="text-[#837A75] text-center">
+        <Image className="w-16 h-16 mx-auto mb-2" />
+        <p>No CAD images available</p>
+      </div>
+    )}
+  </div>
+)}
 
-<Carousel className="w-full max-w-[400px]">
+{activeTab === 'Sketch' && (
+  <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4">
+    {sketchMedia.length > 0 ? (
+      <img
+        src={API_CONFIG.BASE_URL + sketchMedia[mainImageIndex].url}
+        alt={sketchMedia[mainImageIndex].title}
+        className="w-full h-full object-contain cursor-zoom-in"
+        onClick={() => {
+          setModalType('image');
+          setModalIndex(mainImageIndex);
+          setModalOpen(true);
+        }}
+      />
+    ) : (
+      <div className="text-[#837A75] text-center">
+        <Image className="w-16 h-16 mx-auto mb-2" />
+        <p>No sketches available</p>
+      </div>
+    )}
+  </div>
+)}
+{/* CAD CAROUSEL */}
+{activeTab === 'Images' && cadMedia.length > 1 && (
+  <Carousel className="w-full max-w-[400px]">
+    <CarouselContent>
+      {cadMedia.map((media, index) => (
+        <CarouselItem key={media.id} className="basis-1/4">
+          <div className="p-1">
+            <div
+              className={`aspect-square bg-white rounded border-2 overflow-hidden cursor-pointer
+                ${index === mainCadIndex ? 'border-[#4A3C72]' : 'border-gray-200'}`}
+              onClick={() => setMainCadIndex(index)}
+            >
+              <img
+                src={API_CONFIG.BASE_URL + media.url}
+                alt={media.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </CarouselItem>
+      ))}
+    </CarouselContent>
+    <CarouselPrevious />
+    <CarouselNext />
+  </Carousel>
+)}
+{/* Sketch CAROUSEL */}
+{activeTab === 'Sketch' && sketchMedia.length > 1 && (
+  <Carousel className="w-full max-w-[400px]">
+    <CarouselContent>
+      {sketchMedia.map((media, index) => (
+        <CarouselItem key={media.id} className="basis-1/4">
+          <div className="p-1">
+            <div
+              className={`aspect-square bg-white rounded border-2 overflow-hidden cursor-pointer
+                ${index === mainImageIndex ? 'border-[#4A3C72]' : 'border-gray-200'}`}
+              onClick={() => setMainImageIndex(index)}
+            >
+              <img
+                src={API_CONFIG.BASE_URL + media.url}
+                alt={media.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </CarouselItem>
+      ))}
+    </CarouselContent>
+    <CarouselPrevious />
+    <CarouselNext />
+  </Carousel>
+)}
 
-  <CarouselContent>
-
-    {allMedia.map((media, index) => (
-
-      <CarouselItem key={media.id} className="basis-1/4">
-
-        <div className="p-1">
-
-          <div 
-
-            className={` aspect-square bg-white rounded border-2 overflow-hidden cursor-pointer hover:border-[#4A3C72] transition-colors ${
-
-              index === mainImageIndex ? 'border-[#4A3C72]' : 'border-gray-200'
-
-            }`}
-
-            onClick={() => setMainImageIndex(index)}
-
-          >
-                            <img
-                              src={API_CONFIG.BASE_URL + media.url}
-                              alt={media.title}
-                              className="w-full h-full object-cover"
-                            />
-                        </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-              </Carousel>
-            )}
           </div>
 
           {/* Details */}
@@ -757,49 +779,46 @@ const ItemDetailPage: React.FC = () => {
         </div>
       </footer>
 
-      {/* Media Preview Modal (sketch images only) */}
-      {modalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
-          onClick={() => setModalOpen(false)}
-        >
-          <div
-            className="relative bg-card rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center p-6 border border-[#E6C2FF]"
-            onClick={e => e.stopPropagation()}
-          >
-            <button
-              className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-800"
-              onClick={() => setModalOpen(false)}
-              title="Close"
-            >
-              <X className="w-8 h-8" />
-            </button>
-            
-            {modalType === 'image' && allMedia[modalIndex] && allMedia[modalIndex].type === 'image' && (
+  {/* Media Preview Modal */}
+{modalOpen && (
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+    onClick={() => setModalOpen(false)}
+  >
+    <div
+      className="relative bg-card rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center p-6 border border-[#E6C2FF]"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-800"
+        onClick={() => setModalOpen(false)}
+        title="Close"
+      >
+        <X className="w-8 h-8" />
+      </button>
 
-<img
-
-  src={API_CONFIG.BASE_URL + allMedia[modalIndex].url}
-
-  alt={allMedia[modalIndex].title}
-
-  className="max-w-full max-h-[70vh] object-contain bg-card rounded shadow mb-4"
-
-/>
-
-)}
-            
-            {/* <div className="text-center">
-              <h3 className="text-lg font-semibold text-[#4A3C72] mb-2">
-                {allMedia[modalIndex]?.title}
-              </h3>
-              <p className="text-sm text-[#837A75]">
-                Image {modalIndex + 1} of {allMedia.length}
-              </p>
-            </div> */}
-          </div>
-        </div>
+      {/* CAD MODAL IMAGE */}
+      {activeTab === "Images" && cadMedia[modalIndex] && (
+        <img
+          src={API_CONFIG.BASE_URL + cadMedia[modalIndex].url}
+          alt={cadMedia[modalIndex].title}
+          className="max-w-full max-h-[70vh] object-contain bg-card rounded shadow mb-4"
+        />
       )}
+
+      {/* SKETCH MODAL IMAGE */}
+      {activeTab === "Sketch" && sketchMedia[modalIndex] && (
+        <img
+          src={API_CONFIG.BASE_URL + sketchMedia[modalIndex].url}
+          alt={sketchMedia[modalIndex].title}
+          className="max-w-full max-h-[70vh] object-contain bg-card rounded shadow mb-4"
+        />
+      )}
+    </div>
+  </div>
+)}
+
+
     </div>
   );
 };
