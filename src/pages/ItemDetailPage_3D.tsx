@@ -659,8 +659,8 @@ try {
         <model-viewer
           // src="https://modelviewer.dev/shared-assets/models/silver-gold.gltf"
           // src="https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb"
-          src="public/test.glb"
-          // src={activeGLB || undefined}
+          // src="public/test.glb"
+          src={activeGLB || undefined}
           camera-controls
           auto-rotate
           ar
@@ -684,8 +684,8 @@ try {
         <model-viewer
         // src="https://modelviewer.dev/shared-assets/models/silver-gold.gltf"
         // src="https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb"
-        src="../../public/test.glb"
-        // src={activeGLB || undefined}
+        // src="../../public/test.glb"
+        src={activeGLB || undefined}
         camera-controls
         auto-rotate
         ar
