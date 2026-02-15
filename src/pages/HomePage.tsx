@@ -126,7 +126,7 @@ const HomePage: React.FC = () => {
       {/* Footer */}
       <footer className="border-t border-gray-200 py-4 mt-auto bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center text-gray-500 text-xs">Copyright © 2025 Your Custom Jewelry. All rights reserved.</div>
+            <div className="text-center text-gray-500 text-xs">Made with ❤️ by <a href="https://www.platify.cloud" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">Platify</a>. Copyright © 2025 Your Custom Jewelry. All rights reserved.</div>
         </div>
       </footer>
     </div>

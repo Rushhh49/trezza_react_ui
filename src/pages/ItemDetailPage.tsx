@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Image } from 'lucide-react';
+import { Home, Image } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -118,6 +118,33 @@ const [mainCadIndex, setMainCadIndex] = useState(0);     // CAD images
   const [retailerInfo, setRetailerInfo] = useState<any | null>(null);
   const [retailerLogoUrl, setRetailerLogoUrl] = useState<string | null>(null);
 
+  const [countdown, setCountdown] = useState(10);
+  
+
+  useEffect(() => {
+    // Only start countdown if item OR version is missing
+    if (item && currentVersion) return;
+  
+    const timer = setInterval(() => {
+      setCountdown((c) => c - 1);
+    }, 1000);
+  
+    const redirect = setTimeout(() => {
+      navigate("/");
+    }, 10000);
+  
+    return () => {
+      clearInterval(timer);
+      clearTimeout(redirect);
+    };
+  }, [item, currentVersion, navigate]);
+
+  useEffect(() => {
+    if (item && currentVersion) {
+      setCountdown(10);
+    }
+  }, [item, currentVersion]);
+  
   useEffect(() => {
     // If we have a PO number, fetch the order to get retailer info
     const poNumber = purchaseNumber || item?.fkb_orders_to_items;
@@ -440,7 +467,9 @@ const [mainCadIndex, setMainCadIndex] = useState(0);     // CAD images
 
   if (!item || !currentVersion) return (
     <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="text-xl text-red-600">No item or version data found</div>
+      <div className="text-xl text-gray-600">No item or version data found. 
+        <br />
+        Redirecting to home page in {countdown} seconds...</div>
     </div>
   );
 
@@ -775,7 +804,7 @@ const [mainCadIndex, setMainCadIndex] = useState(0);     // CAD images
       {/* Footer */}
       <footer className="border-t border-gray-200 py-4 mt-auto bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center text-gray-500 text-xs">Copyright © 2025 Your Custom Jewelry. All rights reserved.</div>
+          <div className="text-center text-gray-500 text-xs">Made with ❤️ by <a href="https://www.platify.cloud" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">Platify</a>. Copyright © 2025 Your Custom Jewelry. All rights reserved.</div>
         </div>
       </footer>
 
